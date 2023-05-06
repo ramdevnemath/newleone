@@ -1,0 +1,148 @@
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.1/css/bootstrap.min.css" integrity="sha512-VyvYODdTX5thOk83L98f3Cg4e85t2DwHEbJGyyWzS8KvRfuLdp57nX9pLW7D8RmZuV7w+MxZu3qLrTqzwu0Qng==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<!-- Custom CSS -->
+<style>
+  form {
+    max-width: 500px;
+    margin: auto;
+  }
+
+  label {
+    font-weight: bold;
+  }
+
+  select,
+  input[type="text"],
+  textarea,
+  input[type="number"],
+  input[type="file"] {
+    margin-bottom: 1rem;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    border: 1px solid #ced4da;
+  }
+
+  button[type="submit"] {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+  }
+  
+
+  button[type="submit"]:hover {
+    background-color: #0069d9;
+    border-color: #0062cc;
+    color: #fff;
+  }
+</style>
+
+<h1><b> Edit Product </b></h1>
+<form action="/admin/editProduct/<%=editProduct._id %>" id="editProductForm" method="POST" enctype="multipart/form-data" >
+  <div class="mb-3">
+    <label for="name" class="form-label">Company:</label>
+    <input type="text" class="form-control" id="name" name="company" value="<%=editProduct.company %>" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="description" class="form-label">Product Name:</label>
+    <input type="text" class="form-control" id="description" name="productname" required value="<%=editProduct.productname %>">
+    <!-- <textarea class="form-control" id="description" name="description" rows="5" value="<%#editProduct.description%>" required></textarea> -->
+  </div>
+  <div class="mb-3">
+    <label for="name" class="form-label">Type:</label>
+    <select class="form-select" id="category" name="type" required>
+      
+      <option value="Men's">Men</option>
+      <option value="Women's">Women</option>
+      <option value="Baby's & Kids's">Baby's & Kid's</option>
+    </select>
+  </div>
+
+  <div class="form-group mt-3">
+    <label for="categoryDescription">Category</label>
+    <select class="form-control" id="categoryDescription" name="category" required>
+      
+      <% categories.forEach(element => { %>
+        <option value="<%= element._id %>"><%= element.category %></option>
+      <% }) %>
+      <!-- Add more options as needed -->
+    </select>
+    <div class="invalid-feedback">
+      Please select a category description.
+    </div>
+  </div>
+
+  <div class="form-group mt-3">
+    <label for="categoryDescription">SubCategory</label>
+    <select class="form-control" id="categoryDescription" name="subcategory" required>
+      
+      <% subcategories.forEach(element => { %>
+        <option value="<%= element._id %>"><%= element.sub_category %></option>
+      <% }) %>
+      <!-- Add more options as needed -->
+    </select>
+    <div class="invalid-feedback">
+      Please select a category description.
+    </div>
+  </div>
+  
+  <!-- <div class="mb-3">
+    <label for="category" class="form-label">Sub Category:</label>
+    <select class="form-select" id="category" name="subcategory" required>
+      <option value="">--Select Category--</option>
+      <% categories.forEach(element => { %>
+        <option value="<%= element._id %>"><%= element.description %></option>
+      <% }) %>
+    </select>
+  </div> -->
+  <div class="mb-3">
+    <label for="price" class="form-label">Deal:</label>
+    <input type="text" class="form-control" id="description" name="deal"  value="<%=editProduct.deal %>" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="price" class="form-label">Price:</label>
+    <input type="number" class="form-control" id="price" name="price"  min="0" value="<%=editProduct.price %>" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="price" class="form-label">Size:</label>
+    <input type="text" class="form-control" id="price" name="size"  value="<%=editProduct.size %>" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="image" class="form-label">Image:</label>
+
+    <% editProduct.images.forEach(images => { %>
+      <td>
+        <img style="width:100px; height: auto;" src="/uploads/<%=images%>" alt="Product Image" id="imgView" class="pt-3">
+      </td>
+  <% }) %>
+  <input type="file" name="image" class="form-control" onchange="viewImage(event)" multiple>
+    <!-- <img src="/uploads/<%# editProduct.images %>" alt="" style="width: 100px;height: auto;">
+    <input type="file" class="form-control" id="image" name="image" >
+    <input type="file" class="form-control" id="image" name="image" >
+    <input type="file" class="form-control" id="image" name="image" > --> 
+  </div>
+
+  <button type="submit" class="btn btn-primary">Edit Product</button>
+
+<!-- Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1">
+
+function viewImage(event) {
+        //  const images = document.querySelectorAll('img[id^="imgView"]');
+        //  Array.prototype.forEach.call(images, (img, index) => {
+        //  img.src = URL.createObjectURL(event.target.files[index]);
+
+        document.getElementById('imgView').src = URL.createObjectURL(event.target.files[0])
+
+
+  }
+
+
+</script>
