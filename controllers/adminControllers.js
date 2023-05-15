@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 const mongoose = require('mongoose')
 
 exports.getDashboard = async (req, res) => {
-  let adminDetails = req.session.admin;
+  let adminDetails = req.session.admin
   res.render("admin/adminHome", { admin: true, adminDetails });
 };
 
@@ -41,7 +41,7 @@ exports.postAdminLogin = async (req, res) => {
 
     // Authentication successful - create session
     req.session.admin = admin;
-    req.session.admin.loggedIn = true;
+    req.session.adminloggedIn = true;
     res.redirect("/admin/home");
 
   } catch (error) {
@@ -51,17 +51,16 @@ exports.postAdminLogin = async (req, res) => {
   }
 };
 
-
 exports.logout = async (req, res) => {
   req.session.admin = null;
+  req.session.destroy();
   res.redirect("/admin/login");
 };
 
 exports.addCategory = async (req, res) => {
   if (req.session.admin) {
     const category_data = await Category.find();
-
-    res.render("admin/addCategory", { category: category_data, admin: true });
+    res.render("admin/addCategory", { other: false, category: category_data, admin: true });
   } else {
     res.redirect("admin/login");
   }
@@ -83,22 +82,22 @@ exports.addCategoryPost = async (req, res) => {
       if (checking == false) {
         let category = new Category({
           category: req.body.category,
-          description: req.body.description,
+          // description: req.body.description,
         });
 
         const cart_data = await category.save();
-        res.redirect("addCategory");
+        res.redirect("products");
         console.log("new category added");
         // res.send('Category added successfully');
       } else {
-        res.redirect("addCategory");
+        res.redirect("add-category");
         console.log("category already exists");
         // res.status(200).send({success:true, msg: "This category ("+req.body.category+")is already exists."})
       }
     } else {
       const category = new Category({
         category: req.body.category,
-        description: req.body.description,
+        // description: req.body.description,
       });
       await category.save();
       console.log("newcategory");
@@ -106,32 +105,5 @@ exports.addCategoryPost = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
-  }
-};
-
-exports.Orders = async (req, res) => {
-  let userId = req.session.user;
-  try {
-    // let orders =await Order.findOne({})
-    let orders = await Order.aggregate([
-      {
-        $lookup: {
-          from: "products",
-          localField: "products.item",
-          foreignField: "_id",
-          as: "productInfo",
-        },
-      },
-    ]);
-
-    // Now each object in the `products` array of each order will contain the product details
-    // in addition to the item id and quantity.
-
-    console.log(orders);
-   
-
-    res.render("admin/orderList", { admin: true, orders });
-  } catch (error) {
-    console.log(error);
   }
 };

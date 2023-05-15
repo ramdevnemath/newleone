@@ -1,14 +1,11 @@
 <% if (locals.other) { %>
 	<%- body %>
-<% }
+<% } else {%>
 
-else{%>
-
-
-
+	
 	<% if (locals.admin) { %>
 	    <%- include('../partials/admin/adminHead.ejs') %>	
-	    <!-- <%- include('../partials/admin/adminHeader.ejs') %>	 -->
+	    <!-- <%- include('../partials/admin/adminHeader.ejs') %> -->
     	<%- body %>	
 		<%- include('../partials/admin/adminFooter.ejs') %>	  
       	<%- include('../partials/admin/adminScript.ejs') %>

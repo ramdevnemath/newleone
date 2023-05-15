@@ -18,22 +18,13 @@ const productSchema = new Schema({
         type: String,
         required: false
     },
-    // category: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'Category',
-    //     required: true
-    // },
-    // subcategory:{
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'SubCategory',
-    //     required: true
-    //   },
-    // deal:{
-    //     type : String,
-    //     required : true
-    // },
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
+        required: true
+    },
     price:{
-        type : String,
+        type : Number,
         required : true
     },
     image:[
@@ -42,11 +33,11 @@ const productSchema = new Schema({
     stock: {
         type: Number,
         required: true
+    },
+    deleted: {
+        type: Boolean,
+        default: false
     }
-    // deleted: {
-    //     type: Boolean,
-    //     default: false
-    // }
 })
 
 //model name: "Product" will be used to turn into a collection name in DB
