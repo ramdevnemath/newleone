@@ -20,6 +20,8 @@ exports.applyCoupon = async (req, res) => {
       return await res.json({
         message: `Coupon requires minimum purchase of Rs . ${matchCouponId.minPurchase}`,success: false
       });
+        
+      
     } else {
       let discountPercentage = (matchCouponId.discount / cartTotal) * 100;
       let discountAmount = matchCouponId.discount;
