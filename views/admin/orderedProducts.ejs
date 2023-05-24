@@ -1,0 +1,195 @@
+<nav class="navbar navbar-expand-xl">
+    <div class="container h-100">
+      <a class="navbar-brand" href="/admin/home">
+        <h1 class="tm-site-title mb-0">Product Admin</h1>
+      </a>
+      <button class="navbar-toggler ml-auto mr-0" type="button" data-toggle="collapse"
+        data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+        aria-label="Toggle navigation">
+        <i class="fas fa-bars tm-nav-icon"></i>
+      </button>
+  
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mx-auto h-100">
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/home">
+              <i class="fas fa-tachometer-alt"></i>
+              Dashboard
+              <span class="sr-only">(current)</span>
+            </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link" href="/admin/orders" id="" role="button">
+              <i class="far fa-file-alt"></i>
+              <span>
+                Orders
+              </span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/products">
+              <i class="fas fa-shopping-cart"></i>
+              Products
+            </a>
+          </li>
+  
+          <li class="nav-item">
+            <a class="nav-link active" href="/admin/users">
+              <i class="far fa-user"></i>
+              Users
+            </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              <i class="fas fa-cog"></i>
+              <span>
+                Settings <i class="fas fa-angle-down"></i>
+              </span>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="#">Profile</a>
+              <a class="dropdown-item" href="#">Billing</a>
+              <a class="dropdown-item" href="#">Customize</a>
+            </div>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link d-block" href="/admin/logout">
+              Admin, <b>Logout</b>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
+  
+  
+  <div class="container-fluid">
+    <style>
+    /* Custom alert box styles */
+    .custom-alert {
+      padding: 4px;
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+      border-radius: 4px;
+      margin-bottom: 16px;
+      font-size: 12px;
+    }
+
+    .custom-alert.success {
+      background-color: #d4edda;
+      color: #155724;
+      border-color: #c3e6cb;
+    }
+
+    .custom-alert.danger {
+      background-color: #f8d7da;
+      color: #721c24;
+      border-color: #f5c6cb;
+    }
+
+    .card {
+      border: #000000;
+      /* border-radius: 8px; */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-body {
+      padding: 5px;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table thead th {
+      background-color: #6d8da6;
+      color: #333;
+      font-weight: bold;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .table tbody td {
+      padding: 10px;
+      text-align: center;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+       background-color:  #567086; 
+    }
+
+    .table-hover tbody tr:hover {
+      background-color: #141414;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .btn-primary:hover {
+      background-color: #0056b3;
+    }
+  </style>
+
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.3.5/dist/sweetalert2.min.css">
+      <br>
+      <a class="btn btn-outline-primary" onclick="history.back()">Back</a>
+      <br><br>
+      <div class="container-fluid">
+        <div class="card">
+          <div class="card-body">
+            <table class="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <th>Index</th>
+                  <th>Image</th>
+                  <th>Product Name</th>
+                  <th>Size</th>
+                  <th>Quantity</th>
+                  <th>Price</th>
+                  <th>Type</th>
+                  <th>Company</th>
+                  <th>Delivery status</th>
+                  <th>Order status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% order.products.forEach((element, index) => { %>
+                    <tr>
+                      <td><%= index + 1 %></td>
+                      <td><img src="/admin/uploads/<%= orderedProductDetails[index].product.image[0] %>"  width="50"></td>
+                      <td><%= orderedProductDetails[index].product.productName %></td>
+                      <td><%= element.size %></td>
+                      <td><%= element.quantity %></td>
+                      <td>$<%= element.currentPrice %></td>
+                      <td><%= orderedProductDetails[index].product.type %></td>
+                      <td><%= orderedProductDetails[index].product.company %></td>
+                      <td><%= element.deliverystatus %></td>
+                      <td><%= element.orderstatus %></td>
+                    </tr>
+                  <% }) %>
+              </tbody>              
+          </div>
+        </div>
+      </div>
+      <%#- include("../partials/admin/adminFooter") %>
+      
+  
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.3.5/dist/sweetalert2.all.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  <script>

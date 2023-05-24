@@ -62,7 +62,6 @@
 			margin-bottom: 5px;
 		}
 	</style>
-
 	<body>
 		<!-- Start Banner Area -->
 		<section class="banner-area organic-breadcrumb">
@@ -70,11 +69,6 @@
 				<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
 					<div class="col-first">
 						<h1>Product Details Page</h1>
-						<nav class="d-flex align-items-center">
-							<a href="/index">Home<span class="lnr lnr-arrow-right"></span></a>
-							<a href="#">Shop<span class="lnr lnr-arrow-right"></span></a>
-							<a href="/single-product">product-details</a>
-						</nav>
 					</div>
 				</div>
 			</div>
@@ -104,7 +98,7 @@
 								<%= singleProduct.productName %>
 							</h3>
 							<h2>
-								<%= singleProduct.price %>
+								$<%= singleProduct.price %>
 							</h2>
 							<ul class="list">
 								<li><a class="active" href="#"><span>Category</span>
@@ -676,17 +670,7 @@
 		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 		<script>
 
-			function showAlertWithDelay(ccc) {
-				// show the alert with a timer of 2 seconds
-				swal({
-					title: "Done",
-					text: ccc + " added to cart ",
-					icon: "success",
-					timer: 2000,
-					buttons: false,
-					allowOutsideClick: false,
-				});
-			}
+			
 
 			$('.size-btn').click(function () {
 				$(this).toggleClass('size-active').siblings().removeClass('size-active');
@@ -713,7 +697,6 @@
 							} else {
 								$('.cart-btn')('<span class="icon_bag_alt"></span> Add to cart');
 								$('.cart-btn').attr('onclick', 'addToCart("' + proId + '")');
-
 								hideLoader()
 							}
 						}
@@ -727,37 +710,49 @@
 				const size = $('.size-btn.size-active').text();
 				console.log(proId);
 				if (activeBtn.length > 0) {
-
+					// Check if the user is logged in
 					$.ajax({
-
-						url: `/addtoCart/${proId}/?size=${size}`,
-						method: 'get',
-
-						success: (response) => {
-							alert(response)
-							let count = $('#cartCount')()
-
-							count = parseInt(count) + 1
-
-							console.log(count, "kfdghfdgjhgfdghgfdghjkhgfhkjgfdghgfdgh");
-							$('#cartCount')(count)
-
-							console.log(typeof (count))
-							console.log(count, 'countttt')
-							showAlertWithDelay(abc)
-
+						url: '/checkLogin',
+						method: 'GET',
+						success: function (response) {
+							if (response.loggedIn) {
+								// User is logged in, add the product to the cart
+								$.ajax({
+									url: `/addtoCart/${proId}/?size=${size}`,
+									method: 'get',
+									success: function (response) {
+										let count = parseInt($('#cartCount').text()) + 1;
+										$('#cartCount').text(count);
+										console.log(count);
+										swal('', 'Product added to the cart!', 'success');
+									}
+								});
+							} else {
+								// User is not logged in, show an error message and redirect to the login page
+								swal({
+									title: 'Please login for adding product to the cart',
+									icon: 'error',
+									button: 'OK'
+								}).then(function () {
+									window.location.href = '/login';
+								});
+							}
+						},
+						error: function (xhr, status, error) {
+							// Handle other error cases
 						}
-					})
+					});
 				} else {
 					swal({
-						title: "size  not selected",
-						text: "Please select a size to proceed.",
-						icon: "error",
-						button: "OK",
+						title: 'Size not selected',
+						text: 'Please select a size to proceed.',
+						icon: 'error',
+						button: 'OK'
 					});
 				}
-
 			}
+
+
 		</script>
 
 		<script src="/user/js/vendor/jquery-2.2.4.min.js"></script>

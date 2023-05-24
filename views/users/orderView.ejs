@@ -1,47 +1,112 @@
-<br><br><br><br><br>
-<div class="container-fluid">
-<table class="table table-striped table-hover">
-    <thead>
-      <tr>
-        <th>Order Number</th>
-        <th>Order Date</th>
-        <th>Name</th>
-        <th>Address</th>
-        <th>Pincode</th>
-        <th>Mobile</th>
-        <th>Total Amount</th>
-        <th>Total Quantity</th>
-        <th>Status</th>
-        <th>Payment</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <% orders.forEach((element, index) => { %>
-        <tbody>
-            <tr>
-              <td>#<%= index + 1 %></td>
-              <td><%= new Date(element.createdAt).toLocaleString() %></td>
-              <td><%= element.deliveryDetails.firstname + ' ' + element.deliveryDetails.lastname %></td>
-              <td><%= element.deliveryDetails.streetaddress %></td>
-              <td><%= element.deliveryDetails.zip %></td>
-              <td><%= element.deliveryDetails.mobile %></td>
-              <td>₹<%= element.totalAmount %></td>
-              <td><%= getTotalQuantity(element.products) %></td>
-              <td><span class="badge badge-success"><%= element.paymentstatus %></span></td>
-              <td><%= element.paymentMethod %></td>
-              <td><a href="/viewOrderProducts/<%= element._id %>" class="btn btn-primary">View Details</a></td>
-            </tr>
-          </tbody>
-    <% }) %>
-    
-  </table>
-</div>
-  <% function getTotalQuantity(products) { %>
-    <% let total = 0 %>
-    <% products.forEach(product => { %>
-      <% total += product.quantity %>
-    <% }) %>
-    <%= total %>
-  <% } %>
+<style>
+  .card {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
 
-  <br><br><br><br><br>
+  .card-body {
+    padding: 0px;
+    background-color: #ffffff;
+  }
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .table thead th {
+    background-color: #fa6b00;
+    border: none;
+    color: #ffffff;
+    font-weight: bold;
+    /* padding: 5px; */
+    text-align: center;
+  }
+
+  .table tbody td {
+    padding: 10px;
+    text-align: center;
+  }
+
+  .table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f9f9f9;
+  }
+
+  .table-hover tbody tr:hover {
+    background-color: #414141;
+    color: #ff8a00;
+  }
+
+  .btn-primary {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-decoration: none;
+  }
+
+  .btn-primary:hover {
+    background-color: #0056b3;
+  }
+</style>
+<div class="">
+  <div class="hero-wrap hero-bread" class="" style="background-image: url('user/img/banner/banner-bg.jpg');">
+      <div class="container">
+          <div class="row no-gutters slider-text align-items-center justify-content-center">
+              <div style="height: 200px;" class="col-md-9 ftco-animate text-center">
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+<br>
+<br>
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-body">
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>Order Number</th>
+            <th>Order Date</th>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Pincode</th>
+            <th>Mobile</th>
+            <th>Total Amount</th>
+            <th>Total Quantity</th>
+            <th>Payment</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <% orders.forEach((element, index) => { %>
+        <tbody>
+          <tr>
+            <td><%= index + 1 %></td>
+            <td><%= new Date(element.createdAt).toLocaleString() %></td>
+            <td><%= element.deliveryDetails.firstname + ' ' + element.deliveryDetails.lastname %></td>
+            <td><%= element.deliveryDetails.streetaddress %></td>
+            <td><%= element.deliveryDetails.zip %></td>
+            <td><%= element.deliveryDetails.mobile %></td>
+            <td>$<%= element.totalAmount %></td>
+            <td><%= getTotalQuantity(element.products) %></td>
+            <td><%= element.paymentMethod %></td>
+            <td><a href="/viewOrderProducts/<%= element._id %>" class="btn btn-outline-warning">View Details</a></td>
+          </tr>
+        </tbody>
+        <% }) %>
+      </table>
+    </div>
+  </div>
+</div>
+
+<% function getTotalQuantity(products) { %>
+<% let total = 0 %>
+<% products.forEach(product => { %>
+<% total += product.quantity %>
+<% }) %>
+<%= total %>
+<% } %>

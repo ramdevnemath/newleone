@@ -6,7 +6,11 @@ const categorySchema = new Schema({
     category :{
         type:String,
         required:true
-    },  
+    },
+    delete: {
+        type: Boolean,
+        default: false
+    },
 },
 {
     timestamps:true

@@ -1,5 +1,7 @@
 const Admin = require("../models/adminSchema");
 const Category = require("../models/categorySchema");
+const Order = require("../models/orderSchema");
+const User = require("../models/userSchema")
 const multer = require("multer");
 const bcrypt = require("bcrypt");
 const mongoose = require('mongoose')
@@ -72,9 +74,7 @@ exports.addCategoryPost = async (req, res) => {
     if (category_data.length > 0) {
       let checking = false;
       for (let i = 0; i < category_data.length; i++) {
-        if (
-          category_data[i]["category"].toLowerCase() === req.body.category.toLowerCase()
-        ) {
+        if (category_data[i]["category"].toLowerCase() === req.body.category.toLowerCase()) {
           checking = true;
           break;
         }
@@ -107,3 +107,131 @@ exports.addCategoryPost = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
+exports.viewOrders = async (req, res) => {
+  let userId = req.session.user;
+  const perPage = 4;
+  try {
+    let orders = await Order.find()
+      .populate({
+        path: 'userId',
+        model: 'User',
+        select: 'name email' // select the fields you want to include from the User document
+      })
+      .populate({
+        path: 'products.item',
+        model: 'Product'
+      })
+      .exec();
+
+    let count = 0
+    orders.forEach(order => {
+      count += order.products.length
+    })
+
+
+    res.locals.orders = orders;
+
+    console.log(orders, "all orders");
+
+
+    res.render('admin/viewOrders', { admin: true, pages: Math.ceil(count / perPage) });
+  } catch (error) {
+    console.log(error);
+  }
+};
+// load data
+exports.loadOrderData = async (req, res) => {
+  const perPage = 5
+  const page = req.query.page
+  console.log(page);
+  const orders = await Order.find({}).skip((page - 1) * perPage).limit(perPage).populate({
+    path: 'userId',
+    model: 'User'
+  })
+  console.log(orders.length);
+  res.json(orders)
+}
+
+exports.userslist = async (req, res) => {
+  try {
+    let adminDetails = req.session.admin;
+    const userList = await User.find({});
+    res.render("admin/usersList", { userList, admin: true, adminDetails });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+exports.orderedProducts = async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const order = await Order.findById(orderId)
+      .populate({
+        path: "products.item",
+        model: "Product",
+      })
+      .exec();
+
+    if (!order) {
+      return res.status(404).send("Order not found");
+    }
+
+    const orderedProductDetails = order.products.map((product) => {
+      return {
+        product: product.item,
+        quantity: product.quantity,
+      };
+    });
+
+    res.render("admin/orderedProducts", {
+      admin: true,
+      user: req.session.user,
+      order,
+      orderedProductDetails,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+exports.orderStatus = async (req, res) => {
+  console.log(req.body, 'selected ')
+
+  let productId = req.query.productId
+  let orderId = req.query.orderId;
+  console.log(productId, "proId")
+  console.log(orderId, "ordId")
+  const deliveryStatus = req.body.deliveryStatus;
+  console.log(deliveryStatus)
+
+  let orders = await Order.find({ _id: orderId })
+    .populate({
+      path: 'products.item',
+      model: 'Product'
+    }).exec();
+
+  console.log(orders, "ord")
+
+  let product = null;
+  for (let i = 0; i < orders.length; i++) {
+    let order = orders[i];
+    product = order.products.find(product => product.item._id.toString() === productId);
+    console.log(product, "products found")
+    if (product) {
+      if (deliveryStatus == 'cancelled') {
+        product.orderstatus = deliveryStatus;
+        product.deliverystatus = deliveryStatus;
+      } else {
+        product.orderstatus = 'confirmed';
+        product.deliverystatus = deliveryStatus;
+      }
+
+      await order.save();
+      break; // Exit the loop once product is found
+    }
+  }
+
+  res.redirect('/admin/orders')
+}

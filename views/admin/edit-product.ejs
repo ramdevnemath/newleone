@@ -1,19 +1,14 @@
-<%- include('../partials/admin/adminHead.ejs') %>	
+<%- include('../partials/admin/adminHead.ejs') %>
+
   <body>
     <nav class="navbar navbar-expand-xl">
       <div class="container h-100">
         <a class="navbar-brand" href="/admin/index">
           <h1 class="tm-site-title mb-0">Product Admin</h1>
         </a>
-        <button
-          class="navbar-toggler ml-auto mr-0"
-          type="button"
-          data-toggle="collapse"
-          data-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
+        <button class="navbar-toggler ml-auto mr-0" type="button" data-toggle="collapse"
+          data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+          aria-label="Toggle navigation">
           <i class="fas fa-bars tm-nav-icon"></i>
         </button>
 
@@ -26,23 +21,12 @@
               </a>
             </li>
             <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle"
-                href="#"
-                id="navbarDropdown"
-                role="button"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-              >
+              <a class="nav-link" href="/admin/orders" id="" role="button">
                 <i class="far fa-file-alt"></i>
-                <span> Reports <i class="fas fa-angle-down"></i> </span>
+                <span>
+                  Orders
+                </span>
               </a>
-              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="#">Daily Report</a>
-                <a class="dropdown-item" href="#">Weekly Report</a>
-                <a class="dropdown-item" href="#">Yearly Report</a>
-              </div>
             </li>
             <li class="nav-item">
               <a class="nav-link active" href="/admin/products">
@@ -56,15 +40,8 @@
               </a>
             </li>
             <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle"
-                href="#"
-                id="navbarDropdown"
-                role="button"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-              >
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-cog"></i>
                 <span> Settings <i class="fas fa-angle-down"></i> </span>
               </a>
@@ -96,138 +73,97 @@
             </div>
             <div class="row tm-edit-product-row">
               <div class="col-xl-6 col-lg-6 col-md-12">
-                <form action="/admin/edit-product/<%= editProduct._id %>" method="post" class="tm-edit-product-form">
+                <form action="/admin/edit-product/<%= editProduct._id %>" method="post" class="tm-edit-product-form"
+                  enctype="multipart/form-data">
                   <div class="form-group mb-3">
-                    <label
-                      for="productName"
-                      >Product Name
+                    <label for="productName">Product Name
                     </label>
-                    <input
-                      id="name"
-                      name="productName"
-                      type="text"
-                      value="<%= editProduct.productName %>"
-                      class="form-control validate"
-                    />
+                    <input id="name" name="productName" type="text" value="<%= editProduct.productName %>"
+                      class="form-control validate" />
                   </div>
                   <div class="form-group mb-3">
-                    <label
-                      for="description"
-                      >Description
-                      </label
-                    >
-                    <input                    
-                      class="form-control validate tm-small"
-                      rows="5"
-                      value="<%= editProduct.description %>"
-                    ></input>
+                    <label for="description">Description
+                    </label>
+                    <input class="form-control validate tm-small" rows="5"
+                      value="<%= editProduct.description %>"></input>
                   </div>
                   <div class="form-group mb-3">
-                    <label
-                      for="category"
-                      >Category</label
-                    >
-                    <select class="custom-select tm-select-accounts" id="category">
-                      <option>Select category</option>
-                      <% categories.forEach(element => { %>
-                        <option value="<%= element._id %>"><%= element.category %></option>
-                      <% }) %>
+                    <label for="category">Category</label>
+                    <select class="custom-select tm-select-accounts" id="category" name="category">
+                        <option value="<%= category._id %>">
+                         <%= category.category %>
+                        </option>
+                      <% categories.forEach(element=> { %>
+                        <% if (!element.delete) { %>
+                          <% if (category.category != element.category) { %>
+                            <option value="<%= element._id %>">
+                              <%= element.category %>
+                            </option>
+                          <% } %>
+                          <% } %>
+                            <% }) %>
                     </select>
                   </div>
                   <div class="row">
-                      <div class="form-group mb-3 col-xs-12 col-sm-6">
-                          <label
-                            for="company"
-                            >Company
-                          </label>
-                          <input
-                            id="company"
-                            name="company"
-                            type="text"
-                            value="<%= editProduct.company %>"
-                            class="form-control validate"
-                            data-large-mode="true"
-                          />
-                        </div>
-                        <div class="form-group mb-3 col-xs-12 col-sm-6">
-                          <label
-                            for="stock"
-                            >Units In Stock
-                          </label>
-                          <input
-                            id="stock"
-                            name="stock"
-                            type="text"
-                            value="<%= editProduct.stock %>"
-                            class="form-control validate"
-                          />
-                        </div>
-                        <div class="form-group mb-3 col-xs-12 col-sm-6">
-                          <label
-                            for="type"
-                            >Type
-                          </label>
-                          <input
-                            id="type"
-                            name="type"
-                            type="text"
-                            value="<%= editProduct.type %>"
-                            class="form-control validate"
-                          />
-                        </div>
-                        <div class="form-group mb-3 col-xs-12 col-sm-6">
-                          <label
-                            for="price"
-                            >Price
-                          </label>
-                          <input
-                            id="price"
-                            name="price"
-                            type="text"
-                            value="<%= editProduct.price %>"
-                            class="form-control validate"
-                          />
-                        </div>
+                    <div class="form-group mb-3 col-xs-12 col-sm-6">
+                      <label for="company">Company
+                      </label>
+                      <input id="company" name="company" type="text" value="<%= editProduct.company %>"
+                        class="form-control validate" data-large-mode="true" />
+                    </div>
+                    <div class="form-group mb-3 col-xs-12 col-sm-6">
+                      <label for="stock">Units In Stock
+                      </label>
+                      <input id="stock" name="stock" type="text" value="<%= editProduct.stock %>"
+                        class="form-control validate" />
+                    </div>
+                    <div class="form-group mb-3 col-xs-12 col-sm-6">
+                      <label for="type">Type
+                      </label>
+                      <input id="type" name="type" type="text" value="<%= editProduct.type %>"
+                        class="form-control validate" />
+                    </div>
+                    <div class="form-group mb-3 col-xs-12 col-sm-6">
+                      <label for="price">Price
+                      </label>
+                      <input id="price" name="price" type="text" value="<%= editProduct.price %>"
+                        class="form-control validate" />
+                    </div>
                   </div>
-                  
+
               </div>
               <div class="col-xl-6 col-lg-6 col-md-12 mx-auto mb-4">
                 <div class="tm-product-img-edit mx-auto">
-                  
-                  <img src="" alt="Product image" class="img-fluid d-block mx-auto">
-                  
-                  <i
-                    style="width: 100px; height: auto"
-                    class="fas fa-cloud-upload-alt tm-upload-icon"
-                    onclick="document.getElementById('image').click();"
-                  ></i>
+
+                  <img id="image" src="/admin/uploads/<%= editProduct.image[0,1,2] %>" alt="Product image"
+                    class="img-fluid d-block mx-auto">
+
+                  <i style="width: 100px; height: auto" class="fas fa-cloud-upload-alt tm-upload-icon"
+                    onclick="document.getElementById('image').click();"></i>
                 </div>
                 <div class="custom-file mt-3 mb-3">
-                  <input multiple id="image" type="file" style="display:none;" />
-                  <input
-                  multiple
-                    type="button"
-                    class="btn btn-primary btn-block mx-auto"
-                    value="CHANGE IMAGE NOW"
-                    onclick="document.getElementById('image').click();"
-                  />
+                  <input multiple id="image" name="image" type="file" style="display:none;" />
+                  <input multiple name="image" type="button" class="btn btn-primary btn-block mx-auto"
+                    value="CHANGE IMAGE NOW" onclick="document.getElementById('image').click();" />
                 </div>
               </div>
               <div class="col-12">
                 <button type="submit" class="btn btn-primary btn-block text-uppercase">Update Now</button>
               </div>
-            </form>
+              </form>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <%- include('../partials/admin/adminScript.ejs') %>	
-    <!-- <script>
-      $(function() {
-        $("#expire_date").datepicker({
-          defaultDate: "10/22/2020"
-        });
-      });
-    </script> -->
+
+    <!-- <div id="myElement" data-server-variable="<%= category.category %>"></div> -->
+    <%- include('../partials/admin/adminScript.ejs') %>
   </body>
+
+ 
+
+<script>
+  var serverVariable = document.getElementById('myElement').dataset.serverVariable;
+ console.log(serverVariable,"hihi");
+</script>

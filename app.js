@@ -12,6 +12,7 @@ const ejs = require('ejs')
 const expressLayout = require('express-ejs-layouts')
 const flash = require('express-flash')
 const methodOverride = require('method-override')
+var swal = require('sweetalert2')
 // const MongoDBStore = require('connect-mongodb-session')
 
 var app = express();
@@ -71,7 +72,7 @@ app.use(function (err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('users/error');
+  res.render('error');
 });
 
 module.exports = app;

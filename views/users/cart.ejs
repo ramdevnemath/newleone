@@ -1,69 +1,296 @@
-<section class="h-100" style="background-color: #eee;">
-    <div class="container h-100 py-5">
-      <div class="row d-flex justify-content-center align-items-center h-100">
-        <div class="col-10">
-  
-          <div style="margin-top: 100px;" class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="fw-normal mb-0 text-black">Shopping Cart</h3>
-            <div>
-              <p class="mb-0"><span class="text-muted">Sort by:</span> <a href="#!" class="text-body">price <i
-                    class="fas fa-angle-down mt-1"></i></a></p>
-            </div>
+<style>
+  /* Normal state */
+  .btn-hover {
+    cursor: pointer;
+  }
+</style>
+<section style="background-color: #eee;">
+  <div class="container h-100 py-5">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-10">
+
+        <div style="margin-top: 100px;" class="d-flex justify-content-between align-items-center mb-4">
+          <h3 class="fw-normal mb-0 text-black">Shopping Cart</h3>
+          <div>
+            <p class="mb-0"><span class="text-muted">Sort by:</span> <a id="sortButton" href="#!"
+                class="text-body">price <i class="fas fa-angle-down mt-1"></i></a></p>
           </div>
-          <% cartItems.forEach(item => { %>
-          <div class="card rounded-3 mb-4">
+        </div>
+        <% cartItems.forEach(item=> { %>
+          <div id="itemList" class="card rounded-3 mb-4">
             <div class="card-body p-4">
               <div class="row d-flex justify-content-between align-items-center">
                 <div class="col-md-2 col-lg-2 col-xl-2">
-                  <img
-                    src="/admin/uploads/<%= item.productInfo.image[0] %>"
-                    class="img-fluid rounded-3" alt="Cotton T-shirt">
+                  <img src="/admin/uploads/<%= item.productInfo.image[0] %>" class="img-fluid rounded-3"
+                    alt="Cotton T-shirt">
                 </div>
                 <div class="col-md-3 col-lg-3 col-xl-3">
-                  <p class="lead fw-normal mb-2"><%= item.productInfo.productName %></p>
-                  <p><span class="text-muted">Size: </span><%= item.size %> <span class="text-muted"></span></p>
+                  <p class="lead fw-normal mb-2">
+                    <%= item.productInfo.productName %>
+                  </p>
+                  <p><span class="text-muted">Size: </span>
+                    <%= item.size %> <span class="text-muted"></span>
+                  </p>
                 </div>
-                <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
-                  <button class="btn btn-link px-2"
-                    onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+                <div class="col-md-3 col-lg-3 col-xl-2 d-flex total">
+                  <a class="btn btn-link px-2"
+                    onclick="changeQuantity('<%= item._id %>','<%= item.unique_id %>','<%= user._id %>',-1,'<%= item.currentPrice %>','<%= item.productInfo.stock %>')">
                     <i class="fa fa-minus"></i>
-                  </button>
-  
-                  <input id="form1" min="0" name="quantity" value="2" type="number"
-                    class="form-control form-control-sm" />
-  
-                  <button class="btn btn-link px-2"
-                    onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+                  </a>
+                  <b id="<%= item.unique_id %>" style="margin-right: 5px;">
+                    <%= item.quantity %>
+                  </b>
+                  <a class="btn btn-link px-2"
+                    onclick="changeQuantity('<%= item._id %>','<%= item.unique_id %>','<%= user._id %>',1,'<%= item.currentPrice %>','<%= item.productInfo.stock %>')">
                     <i class="fa fa-plus"></i>
-                  </button>
+                  </a>
                 </div>
                 <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
-                  <h5 class="mb-0">$<%= item.productInfo.price %></h5>
+                  <h5 class="mb-0">$<%= item.currentPrice %>
+                  </h5>
                 </div>
                 <div class="col-md-1 col-lg-1 col-xl-1 text-end">
-                  <a href="#!" class="text-danger"><i class="fa fa-trash fa-lg"></i></a>
+                  <a class="text-danger btn-hover"
+                    onclick="removeItem('<%=item._id%>','<%=item.unique_id%>','<%= user._id %>')"><i
+                      class="fa fa-trash fa-lg"></i></a>
                 </div>
               </div>
             </div>
           </div>
           <% }) %>
-          <div class="card mb-4">
-            <div class="card-body p-4 d-flex flex-row">
-              <div class="form-outline flex-fill">
-                <input type="text" id="form1" class="form-control form-control-lg" />
-                <label class="form-label" for="form1">Discound code</label>
+            <div class="card mb-4">
+              <div class="card-body p-4 d-flex flex-row">
+                <div class="form-outline flex-fill">
+                  <input type="text" id="form1" class="form-control form-control-lg" />
+                  <label class="form-label" for="form1">Discound code</label>
+                </div>
+                <button style="height: 50px;" type="button"
+                  class="ml-4 btn btn-outline-warning btn-lg ms-3">Apply</button>
               </div>
-              <button style="height: 50px;" type="button" class="ml-4   ] btn btn-outline-warning btn-lg ms-3">Apply</button>
             </div>
-          </div>
-  
-          <div class="card">
-            <div class="card-body">
-              <button type="button" class="btn btn-warning btn-block btn-lg">Proceed to Pay</button>
+            <div class="row justify-content-start">
+              <div class="col col-lg-5 col-md-6 mt-5 cart-wrap ftco-animate">
+                <div class="cart-total mb-3">
+                  <h3>Cart Totals</h3>
+                  <p class="d-flex">
+                    <span>Total :</span>
+                    <span id="totalPrice">
+                      $<%= locals.subtotal %>
+                    </span>
+                  </p>
+                  <!-- <p class="d-flex">
+                    <span>Tax :</span>
+                    <span id="adTax">
+                      $<%#= locals.tax %>
+                    </span>
+                  </p> -->
+                  <hr>
+                  <!-- <p class="d-flex total-price">
+                    <span>Total :</span>
+                    <%# if (total.length) { %>
+                      <span id="taxWithTotal"> $<%#=locals.totalWithTax %></span>
+                      <%# }else{ %>
+
+                        <span id="total">0</span>
+
+                        <%# } %>
+                  </p> -->
+                </div>
+                <div class="card">
+                  <div class="card-body">
+                    <a href="/address" type="button" class="btn btn-warning btn-block btn-lg">Proceed to Pay</a>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-  
-        </div>
       </div>
-    </div>
-  </section>
+</section>
+
+<script>
+
+  const couponInput = document.querySelector('#coupon-code');
+  // const applyCouponBtn = document.querySelector('#apply-coupon-btn');
+  // const couponMessage = document.querySelector('#coupon-message');
+
+
+  function changeQuantity(cartId, proId, userId, count, salePrice, stock) {
+    console.log(userId)
+    console.log(proId)
+    let quantity = document.getElementById(proId).innerHTML
+    quantity = parseInt(document.getElementById(proId).innerHTML);
+    count = parseInt(count)
+    console.log(quantity)
+    console.log(count)
+    if (quantity + count > stock) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Quantity exceeds available stock",
+      })
+      return;
+    } else {
+      $.ajax({
+        url: '/changeProductQuantity',
+        data: {
+          cart: cartId,
+          product: proId,
+          user: userId,
+          count: count,
+          quantity: quantity
+        },
+        method: 'post',
+        success: (response) => {
+          document.getElementById(proId).innerHTML = quantity + count;
+          if (response.removeProduct) {
+            console.log('///////////////')
+            $('tr[data-product-id="' + proId + '"]').remove();
+
+            document.getElementById('totalPrice').innerHTML = "$" + response.subtotal;
+            // document.getElementById('adTax').innerHTML = "₹" + response.tax;
+            // document.getElementById('taxWithTotal').innerHTML = "₹" + response.totalWithTax;
+
+            Swal.fire({
+              icon: 'success',
+              title: 'Item removed',
+              timer: 2000 // Set a timer to automatically close the message after 2 seconds
+            }).then(() => {
+              location.reload(); // Reload the page
+            });
+
+
+          } else {
+
+
+            console.log(response)
+            document.getElementById(proId).innerHTML = quantity + count;
+
+            // let abc= document.getElementById(proId).innerHTML = parseInt(response.quantity) ;
+            // document.getElementById('subtotal-' + proId).innerHTML = 'Rs. ' + abc*salePrice;
+
+            document.getElementById('totalPrice').innerHTML = "$" + response.total[0].total;
+            // document.getElementById('adTax').innerHTML = "₹" + response.total[0].totalTax;
+            // document.getElementById('taxWithTotal').innerHTML = "₹" + response.total[0].totalWithTax;
+
+          }
+        },
+      });
+    }
+  }
+
+
+
+  function removeItem(cartId, proId, userId) {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to remove this item?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, remove it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          url: '/removeItem',
+          data: {
+            cart: cartId,
+            product: proId,
+            user: userId
+          },
+          method: 'post',
+          success: (response) => {
+            $('tr[data-product-id="' + proId + '"]').remove();
+            document.getElementById('totalPrice').innerHTML = "$" + response.subtotal;
+            // document.getElementById('adTax').innerHTML = "$" + response.tax;
+            // document.getElementById('taxWithTotal').innerHTML = "$" + response.totalWithTax;
+
+            Swal.fire(
+              'Deleted!',
+              'Your item has been deleted.',
+              'success'
+            ).then(() => {
+              location.reload()
+              document.getElementById(proId).innerHTML = 0; // Set the quantity display to 0
+            });
+          }
+        });
+      }
+    });
+  }
+
+
+  function applyCoupon() {
+
+    let couponInput = document.getElementById('couponId');
+    let message = document.getElementById('message');
+
+    couponInput.addEventListener('input', function () {
+      if (couponInput.value.trim().length > 0) {
+        message.innerHTML = '';
+      }
+    });
+
+
+    let couponId = document.getElementById('couponId').value;
+    let total = document.getElementById('taxWithTotal').innerHTML;
+
+    console.log(total)
+    console.log(couponId)
+
+
+    if (couponId.trim().length === 0) {
+      document.getElementById("message").innerHTML = "Enter coupon code";
+
+    } else {
+
+      $.ajax({
+        url: '/apply-coupon',
+        data: {
+          couponId: couponId,
+          total: total
+
+        },
+        method: 'post',
+        success: (response) => {
+
+          console.log(response)
+          if (response.success == false) {
+            document.getElementById("message").innerHTML = response.message;
+            alertify.set('notifier', 'delay', 5);
+            alertify.set('notifier', 'position', 'top-right');
+            alertify.error('Invalid coupon code');
+            location.reload();
+
+            //  document.getElementById("taxWithTotal").innerHTML = total;
+
+          } else if (response.success == true) {
+            console.log(response.discountAmount);
+            console.log(response.cartTotal);
+            console.log(response.cartTotal - response.discountAmount)
+
+            // Update the content of the #couponDiscount element with the discounted amount
+            if (response.discountAmount) {
+              document.getElementById("couponDiscount").innerHTML = `$${response.discountAmount}`;
+              document.getElementById("taxWithTotal").innerHTML = `$${response.cartTotal - response.discountAmount}`;
+            } else {
+              document.getElementById("couponDiscount").innerHTML = "";
+            }
+
+            alertify.set('notifier', 'delay', 2);
+            alertify.set('notifier', 'position', 'top-right');
+            alertify.success('Coupon applied');
+          }
+
+        }
+      });
+
+    }
+  }
+
+  // Disable right-click context menu
+  document.addEventListener('contextmenu', function (event) {
+    event.preventDefault();
+  });
+
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

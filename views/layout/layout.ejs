@@ -1,25 +1,22 @@
 <% if (locals.other) { %>
 	<%- body %>
-<% } else {%>
-
+<% } else { %>
 	
 	<% if (locals.admin) { %>
-	    <%- include('../partials/admin/adminHead.ejs') %>	
-	    <!-- <%- include('../partials/admin/adminHeader.ejs') %> -->
+	    <%- include('../partials/admin/adminHead.ejs') %>
     	<%- body %>	
 		<%- include('../partials/admin/adminFooter.ejs') %>	  
       	<%- include('../partials/admin/adminScript.ejs') %>
 
-		
 	<% } else { %>
 	
 		<%- include('../partials/user/userHead.ejs') %>
 		<%- include('../partials/user/userHeader.ejs') %>
     	<%- body %>
-	  	<%- include('../partials/user/userFooter.ejs') %>
+		<% if (locals.footer) { %>
+			<%- include('../partials/user/userFooter.ejs') %>
+		<% } %>
 	  	<%- include('../partials/user/userScript.ejs') %>
 		<% } %>
 
 <% } %>
-
-

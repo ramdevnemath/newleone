@@ -1,0 +1,338 @@
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
+<style>
+  .btn-success {
+    background-color: green;
+    border-color: green;
+  }
+
+  .my-btn {
+    background-color: #28a745;
+    color: #fff;
+    border-color: #28a745;
+  }
+
+  .my-btn:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+  }
+</style>
+<nav class="navbar navbar-expand-xl">
+  <div class="container h-100">
+    <a class="navbar-brand" href="/admin/index">
+      <h1 class="tm-site-title mb-0">Product Admin</h1>
+    </a>
+    <button class="navbar-toggler ml-auto mr-0" type="button" data-toggle="collapse"
+      data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+      aria-label="Toggle navigation">
+      <i class="fas fa-bars tm-nav-icon"></i>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mx-auto h-100">
+        <li class="nav-item">
+          <a class="nav-link" href="/admin/home">
+            <i class="fas fa-tachometer-alt"></i>
+            Dashboard
+            <span class="sr-only">(current)</span>
+          </a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link active" href="/admin/orders" id="" role="button">
+            <i class="far fa-file-alt"></i>
+            <span>
+              Orders
+            </span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/admin/products">
+            <i class="fas fa-shopping-cart"></i>
+            Products
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="/admin/users">
+            <i class="far fa-user"></i>
+            Users
+          </a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-cog"></i>
+            <span>
+              Settings <i class="fas fa-angle-down"></i>
+            </span>
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="#">Profile</a>
+            <a class="dropdown-item" href="#">Billing</a>
+            <a class="dropdown-item" href="#">Customize</a>
+          </div>
+        </li>
+      </ul>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link d-block" href="/admin/logout">
+            Admin, <b>Logout</b>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<nav aria-label="Page navigation example" class="mt-2 mr-3">
+  <ul class="pagination pagination-sm justify-content-end">
+    <% for( let i=1; i <=pages; i++ ) { %>
+      <li class="page-item"><a class="page-link cursor-pointer pagination-button" data-page="<%= i %>">
+          <%= i %>
+        </a></li>
+      <% } %>
+  </ul>
+</nav>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="table-responsive">
+        <table class="table table-striped table-dark mt-5" id="myTable">
+          <thead>
+            <tr style="width: fit-content">
+              <th scope="col">No</th>
+              <th scope="col">Order Date</th>
+              <th scope="col">Name</th>
+              <th scope="col">Address</th>
+              <th scope="col">Pincode</th>
+              <th>Mobile</th>
+              <th>Total Amount</th>
+              <th>Total Quantity</th>
+              <th>Payment Status</th>
+              <th></th>
+              <th>Payment</th>
+              <th>Order Status</th>
+              <th>Delivery Status</th>
+              <th>Option</th>
+              <!-- <th></th> -->
+            </tr>
+          </thead>
+          <tbody>
+            <% locals.orders.forEach(function(order, index) { %>
+              <% order.products.forEach(prd=> { %>
+                <tr>
+                  <th scope="row">
+                    <%= index + 1 %>
+                  </th>
+                  <td>
+                    <%= new Date(order.createdAt).toLocaleString('en-US', { month: 'short' , day: 'numeric' ,
+                      year: 'numeric' , hour12: true }) %>
+                  </td>
+                  <td>
+                    <%= order.deliveryDetails.firstname %>
+                      <%= order.deliveryDetails.lastname %>
+                  </td>
+                  <td>
+                    <%= order.deliveryDetails.streetaddress %>, <%= order.deliveryDetails.town %>, <%=
+                          order.deliveryDetails.state %>
+                  </td>
+                  <td>
+                    <%= order.deliveryDetails.zip %>
+                  </td>
+                  <td>
+                    <%= order.deliveryDetails.mobile %>
+                  </td>
+                  <td>₹<%= order.totalAmount %>
+                  </td>
+                  <td>
+                    <%= order.products.reduce((total, product)=> total + product.quantity, 0) %>
+                  </td>
+                  <td>
+                    <%= order.paymentstatus %>
+                  </td>
+                  <td>
+                    <%#= order.deliverystatus %>
+                  </td>
+                  <td>
+                    <%= order.paymentMethod %>
+                  </td>
+                  <td>
+                    <%= prd.orderstatus %>
+                  </td>
+                  <!-- <td>
+                  <button class="btn btn-success my-btn" onclick="viewDetails('<%#= order._id %>')">View Details</button>
+                </td> -->
+                  <form action="/admin/order-details/?orderId=<%=order._id %>&productId=<%= prd.item._id %>"
+                    method="post">
+                    <td>
+
+                      <select class="btn btn-outline-danger btn-sm" name="deliveryStatus" id=""
+                        <%=(prd.orderstatus==='cancelled' || order.paymentstatus==='failed' ) ? 'disabled' : '' %>>
+
+                        <option value="default">
+                          <%= prd.deliverystatus %>
+                        </option>
+                        <option value="Shipped">
+                          Shipped
+                        </option>
+                        <option value="Out-for-delivery">
+                          Out for delivery
+                        </option>
+                        <option value="Delivered">
+                          Delivered
+                        </option>
+                        <option value="Returned">
+                          Returned
+                        </option>
+
+                      </select>
+
+
+                    </td>
+                    <td>
+                      <button type="submit" class="btn btn-warning">save</button>
+                    </td>
+                  </form>
+                </tr>
+                <% }) %>
+                  <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+<script>
+
+  function viewDetails(orderId) {
+    // Do something with the order ID, such as redirect to a details page
+    window.location.href = "/order/details/" + orderId;
+  }
+
+
+  $(document).ready(function () {
+    $('#myTable').DataTable();
+  });
+
+
+  document.getElementById("my-dropdown").addEventListener("change", function () {
+    var selectedValue = this.value;
+    if (selectedValue === "year") {
+      document.getElementById("yearDiv").style.display = "block";
+      document.getElementById("monthDiv").style.display = "none";
+      document.getElementById("dayDiv").style.display = "none";
+    } else if (selectedValue === "month") {
+      document.getElementById("yearDiv").style.display = "block";
+      document.getElementById("monthDiv").style.display = "block";
+      document.getElementById("dayDiv").style.display = "none";
+    } else if (selectedValue === "day") {
+      document.getElementById("yearDiv").style.display = "block";
+      document.getElementById("monthDiv").style.display = "block";
+      document.getElementById("dayDiv").style.display = "block";
+    } else {
+      document.getElementById("yearDiv").style.display = "none";
+      document.getElementById("monthDiv").style.display = "none";
+      document.getElementById("dayDiv").style.display = "none";
+    }
+  });
+
+  function loadTableData(page) {
+    $.ajax({
+      url: '/admin/order-data',  // Replace with your data source URL
+      method: 'GET',
+      data: { page: page },
+      success: function (response) {
+        // Update the table with the received data
+        var tableRows = '';
+        response.forEach(function (order, index) {
+          order.products.forEach(prd => {
+            tableRows += '<tr>';
+            tableRows += `<th scope="row">
+                    ${index + 1}
+                  </th>`;
+            tableRows += `<td>
+                   ${new Date(order.createdAt).toLocaleString('en-US')}
+                  </td>`;
+            tableRows += `<td>
+                    ${order.firstname} ${order.lastname}
+                  </td>`;
+
+            tableRows += `<td>
+                ${order.deliverDetails.streetaddress}, ${order.deliveryDetails.town}, ${order.deliveryDetails.state}
+                  </td>`;
+
+            tableRows += `<td>${order.deliveryDetails.zip}`;
+
+            tableRows += `<td>
+                              ${order.deliveryDetails.mobile}
+                          </td>`;
+            tableRows += `<td>
+                              ${order.totalAmount}  </td>`;
+            tableRows += `<td>  
+                              ${order.products.reduce((total, product) => total + product.quantity, 0)}  </td>`;
+            tableRows += `<td>
+                            ${order.paymentstatus}</td>`;
+            tableRows += `<td> 
+                            ${order.paymentMethod}</td>`;
+            tableRows += `<td>
+                            ${order.orderstatus}</td> `;
+            tableRows += `<form action="/admin/order-details/?orderId=${order._id}&productId=${prd.item._id}"
+                        method="post">
+                  <td>
+
+                    <select class="btn btn-outline-danger btn-sm" name="deliveryStatus" id=""
+                      ${(prd.orderstatus==='cancelled' || order.paymentstatus==='failed')?'disabled':''}
+
+                      <option value="default">
+                        ${prd.deliverystatus}
+                      </option>
+                      <option value="Shipped">
+                        Shipped
+                      </option>
+                      <option value="Out-for-delivery">
+                        Out for delivery
+                      </option>
+                      <option value="Delivered">
+                        Delivered
+                      </option>
+                      <option value="Returned">
+                        Returned
+                      </option>
+
+                    </select>
+
+
+                  </td>
+                  <td>
+                    <button type="submit" class="btn btn-warning">save</button>
+                  </td>
+                  </form>`
+            tableRows += '</tr>';
+          });
+          $('#order-table tbody').html(tableRows);
+        })
+        // Update the pagination buttons
+        //   $('#pagination-container').html(response.pagination);
+      },
+      error: function (xhr) {
+        // Handle error if any
+        console.log(xhr);
+      }
+    });
+  }
+
+  $(document).on('click', '.pagination-button', function (event) {
+    event.preventDefault()
+    $('.pagination-button').removeClass('active')
+    $(this).addClass('active')
+    var page = $(this).data('page');
+    console.log(page + 'call recived');
+    loadTableData(page);
+  });
+
+  $(document).ready(function () {
+    $('.pagination-button')[0].classList.add('active')
+    loadTableData(1); // Load the initial page
+  });
+</script>

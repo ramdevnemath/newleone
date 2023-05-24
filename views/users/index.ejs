@@ -1,3 +1,9 @@
+<style>
+	.product-img {
+		height: 270px;
+	}
+</style>
+
 <body>
 	<!-- start banner Area -->
 	<section class="banner-area">
@@ -15,7 +21,7 @@
 										dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.</p>
 									<div class="add-bag d-flex align-items-center">
 										<a class="add-btn" href=""><span class="lnr lnr-cross"></span></a>
-										<span class="add-text text-uppercase">Add to Bag</span>
+										<span class="add-text text-uppercase">View more</span>
 									</div>
 								</div>
 							</div>
@@ -187,37 +193,28 @@
 				</div>
 				<div class="row">
 					<!-- single product -->
-					<% products.forEach(element => { %>
-					<div class="col-lg-3 col-md-6">
-						<div class="single-product">
-							<a href="/single-product/<%= element._id %>">
-								<img class="img-fluid" src="/admin/uploads/<%= element.image[0] %>" alt="">
-							</a>
-							<div class="product-details">
-								<h6><%= element.productName %></h6>
-								<div class="price">
-									<h6><%= element.price %></h6>
-									<h6 class="l-through">$999.00</h6>
-								</div>
-								<div class="prd-bottom">
-
-									<a href="" class="social-info">
-										<span class="ti-bag"></span>
-										<p class="hover-text">add to bag</p>
-									</a>
-									<a href="" class="social-info">
-										<span class="lnr lnr-heart"></span>
-										<p class="hover-text">Wishlist</p>
-									</a>
-									<a href="" class="social-info">
-										<span class="lnr lnr-move"></span>
-										<p class="hover-text">view more</p>
-									</a>
+					<% products.forEach(element=> { %>
+						<div class="col-lg-3 col-md-6">
+							<div class="single-product">
+								<a href="/single-product/<%= element._id %>">
+									<img class="product-img img-fluid" src="/admin/uploads/<%= element.image[0] %>"
+										alt="">
+								</a>
+								<div class="product-details">
+									<h6>
+										<%= element.productName %>
+									</h6>
+									<div class="price">
+										<h6>$<%= element.price %>
+										</h6>
+										<h6 class="l-through">$999.00</h6>
+									</div>
+									<div class="prd-bottom">
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-					<% }) %>
+						<% }) %>
 				</div>
 			</div>
 		</div>
@@ -237,39 +234,36 @@
 				</div>
 				<div class="row">
 					<!-- single product -->
-					<% products.forEach(element => { %>
-					 
-					
-						<div class="col-lg-3 col-md-6">
-						<div class="single-product">
-							<a href="/single-product/<%= element._id %>">
-								<img class="img-fluid" src="/admin/uploads/<%= element.image[0]  %>"
-							</a>
-							<div class="product-details">
-								<h6><%= element.productName %></h6>
-								<div class="price">
-									<h6>&#8377;<%= element.price %></h6>
-									<h6 class="l-through">$999.00</h6>
-								</div>
-								<div class="prd-bottom">
+					<% products.forEach(element=> { %>
 
-									<a href="" class="social-info">
-										<span class="ti-bag"></span>
-										<p class="hover-text">add to bag</p>
-									</a>
-									<a href="" class="social-info">
-										<span class="lnr lnr-heart"></span>
-										<p class="hover-text">Wishlist</p>
-									</a>
-									<a href="" class="social-info">
-										<span class="lnr lnr-move"></span>
-										<p class="hover-text">view more</p>
-									</a>
-								</div>
+
+						<div class="col-lg-3 col-md-6">
+							<div class="single-product">
+								<a href="/single-product/<%= element._id %>">
+									<img class="product-img img-fluid" src="/admin/uploads/<%= element.image[0]  %>"
+										</a>
+									<div class="product-details">
+										<h6>
+											<%= element.productName %>
+										</h6>
+										<div class="price">
+											<h6>$<%= element.price %>
+											</h6>
+											<h6 class="l-through">$999.00</h6>
+										</div>
+										<div class="prd-bottom">
+											<a href=""
+												class="social-info">
+											</a>
+											<a href="" class="social-info">
+											</a>
+											<a href="" class="social-info">
+											</a>
+										</div>
+									</div>
 							</div>
 						</div>
-					</div>
-				<% }) %>
+						<% }) %>
 				</div>
 			</div>
 		</div>

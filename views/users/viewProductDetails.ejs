@@ -1,0 +1,157 @@
+<body>
+  <style>
+    .card {
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-body {
+      padding: 0px;
+      background-color: #ffffff;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table thead th {
+      background-color: #fa6b00;
+      border: none;
+      color: #ffffff;
+      font-weight: bold;
+      /* padding: 5px; */
+      text-align: center;
+    }
+
+    .table tbody td {
+      padding: 10px;
+      text-align: center;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+      background-color: #f9f9f9;
+    }
+
+    .table-hover tbody tr:hover {
+      background-color: #414141;
+      color: #ff8a00;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .btn-primary:hover {
+      background-color: #0056b3;
+    }
+  </style>
+  <div class="">
+    <div class="hero-wrap hero-bread" class="" style="background-image: url('/user/img/banner/banner-bg.jpg');">
+      <div class="container">
+        <div class="row no-gutters slider-text align-items-center justify-content-center">
+          <div style="height: 200px;" class="col-md-9 ftco-animate text-center">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <div class="container-fluid">
+    <a style="display: block; justify-content: center;" class="btn btn-outline-warning"
+      onclick="window.history.back()">Back</a><br>
+    <div class="card">
+      <div class="card-body">
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th>Index</th>
+              <th>Image</th>
+              <th>Product Name</th>
+              <th>Size</th>
+              <th>Quantity</th>
+              <th>Price</th>
+              <th>Type</th>
+              <th>Company</th>
+              <th>Delivery status</th>
+              <th>Order status</th>
+              <th>Option</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% order.products.forEach((prd, index) => { %>
+              <tr>
+                <td>
+                  <%= index + 1 %>
+                </td>
+                <td><img src="/admin/uploads/<%= orderedProducts[index].product.image[0] %>" height="100"></td>
+                <td>
+                  <%= orderedProducts[index].product.productName %>
+                </td>
+                <td>
+                  <%= prd.size %>
+                </td>
+                <td>
+                  <%= prd.quantity %>
+                </td>
+                <td>$<%= prd.currentPrice %></td>
+                <td>
+                  <%= orderedProducts[index].product.type %>
+                </td>
+                <td>
+                  <%= orderedProducts[index].product.company %>
+                </td>
+                <td>
+                  <%= prd.deliverystatus %>
+                </td>
+                <td>
+                  <%= prd.orderstatus %>
+                </td>
+                <td>
+                  <a type="button" class="btn btn-outline-danger" <%=prd.orderstatus==='cancelled' ? 'hidden' : '' %> onclick="cancelOrder('<%= order._id %>','<%= prd.item._id %>')">Cancel</a>
+                </td>
+              </tr>
+            <% }) %>
+            
+          </tbody>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    function cancelOrder(orderId, productId) {
+      // Display a confirmation SweetAlert message
+      swal.fire({
+        title: "Confirmation",
+        text: "Are you sure you want to proceed?",
+        icon: "info",
+        buttons: ["Cancel", "Confirm"],
+        dangerMode: true,
+        closeOnClickOutside: false,
+        closeOnEsc: false,
+        customClass: {
+          container: 'my-swal-container',
+          content: 'my-swal-content',
+          title: 'my-swal-title',
+          cancelButton: 'my-swal-cancel-button',
+          confirmButton: 'my-swal-confirm-button'
+        }
+      })
+        .then((willCancel) => {
+          if (willCancel) {
+            // Redirect to the cancel order page if the user confirms the cancellation
+            location.href = `/cancel-order/?orderId=${orderId}&productId=${productId}`;
+          }
+        });
+    }
+
+  </script>
+</body>
