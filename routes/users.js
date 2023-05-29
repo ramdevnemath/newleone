@@ -32,6 +32,7 @@ router.get('/cart', cartController.cartCount, cartController.getCartProducts)
 router.post('/changeProductQuantity', cartController.changeProductQuantity)
 router.post('/removeItem', cartController.removeItem)
 router.get('/product-size-selector', cartController.productSizeSelector)
+router.get('/getCartTotals' , cartController.getCartTotals)
 
 //verify route
 router.get('/checkLogin', cartController.checkLogin)
@@ -50,7 +51,16 @@ router.delete('/deleteAddress/:id', userController.deleteAddress)
 router.get('/orderPlaced', orderController.orderPlacedCod)
 router.get('/Orders', userController.isLogin, cartController.cartCount, orderController.orders)
 router.get('/viewOrderProducts/:id', userController.isLogin, cartController.cartCount, orderController.viewOrderProducts)
-router.get('/cancel-order/',userController.isLogin,orderController.cancelOrder)
+router.get('/cancel-order/', userController.isLogin,orderController.cancelOrder)
+
+//coupon controller
+router.post('/apply-coupon',couponController.applyCoupon)
+
+//payment controller
+router.post('/verify-payment', userController.paymentVerify)
+router.get('/payment-failed', userController.paymentFailed)
+
+router.get('/return-order/',userController.isLogin,orderController.returnOrder)
 
 //middleware for preventing loading for strangers
 function userauth(req, res, next) {

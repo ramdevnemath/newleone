@@ -13,6 +13,13 @@ const otp = require("../config/otp");
 const { json } = require("body-parser");
 const { UserBindingContextImpl } = require("twilio/lib/rest/chat/v2/service/user/userBinding");
 const ObjectId = mongoose.Types.ObjectId;
+const Razorpay = require('razorpay')
+
+//creation of instance for razorpay
+var instance = new Razorpay({
+  key_id: process.env.key_id,
+  key_secret: process.env.key_secret,
+});
 
 exports.isLogin = async (req, res, next) => {
   try {
@@ -33,7 +40,7 @@ exports.indexPage = async (req, res) => {
     const products = await Product.find({ deleted: false })
     const categories = await Category.find()
     console.log(products);
-    res.render('users/index', { currentPage: 'home', products, user, categories })
+    res.render('users/index', { currentPage: 'home', footer: true, products, user, categories })
   } catch (error) {
     console.log(error);
   }
@@ -41,7 +48,7 @@ exports.indexPage = async (req, res) => {
 
 
 exports.userSignup = async (req, res) => {
-  res.render("users/user-signup", { other: true });
+  res.render("users/user-signup", { other: true, footer: false });
 };
 
 
@@ -51,7 +58,7 @@ exports.homePage = async (req, res) => {
     const products = await Product.find({ deleted: false })
     const categories = await Category.find()
     console.log(products);
-    res.render('users/index', { currentPage: 'home', products, user, categories })
+    res.render('users/index', { currentPage: 'home', footer: true, products, user, categories })
   } catch (error) {
     console.log(error);
   }
@@ -62,6 +69,7 @@ exports.loginPage = async (req, res) => {
     res.redirect("/");
   } else {
     res.render("users/user-login", {
+      footer: false,
       currentPage: 'home',
       other: true,
       loginErr: req.session.loginErr,
@@ -182,6 +190,7 @@ exports.userSingleProduct = async (req, res) => {
 
 
     res.render("users/single-product", {
+      footer: true,
       singleProduct,
       user
     }); //passing the singleProduct values while rendering the page...
@@ -293,7 +302,7 @@ exports.otpLogin = async (req, res) => {
       });
       await OTP.create(newUser);
     }
-    res.render("users/verify", { other: true });
+    res.render("users/verify", { other: true, footer: true });
 
     function saveUser() {
 
@@ -301,7 +310,7 @@ exports.otpLogin = async (req, res) => {
       newUser
         .save()
         .then(() => {
-          res.render("users/verify");
+          res.render("users/verify", { footer: true });
         })
         .catch((err) => {
           console.log("error generating number", err);
@@ -408,9 +417,9 @@ exports.deliveryAddress = async (req, res) => {
           totalTax: { $sum: { $multiply: ["$quantity", "$tax"] } },
           total: { $sum: { $multiply: ["$quantity", "$currentPrice"] } },
           totalWithTax: {
-            $sum: {
-              $multiply: ["$quantity", { $add: ["$tax", "$currentPrice"] }],
-            },
+          $sum: {
+          $multiply: ["$quantity", { $add: ["$tax", "$currentPrice"] }],
+          },
           },
         },
       },
@@ -418,6 +427,7 @@ exports.deliveryAddress = async (req, res) => {
 
     console.log(total, "cart got");
     res.render("users/address", {
+      footer: true,
       cartIcon: true,
       user,
       total,
@@ -496,15 +506,15 @@ exports.deliveryAddressPost = async (req, res) => {
           totalTax: { $sum: { $multiply: ["$quantity", "$tax"] } },
           total: { $sum: { $multiply: ["$quantity", "$currentPrice"] } },
           totalWithTax: {
-            $sum: {
-              $multiply: ["$quantity", { $add: ["$tax", "$currentPrice"] }],
-            },
+          $sum: {
+          $multiply: ["$quantity", { $add: ["$tax", "$currentPrice"] }],
+          },
           },
         },
       },
     ])
 
-    console.log(cart.products)
+  
 
     console.log(total[0].totalWithTax, "cart got")
     let status = req.body["payment-method"] === "COD" ? "placed" : "pending";
@@ -538,8 +548,21 @@ exports.deliveryAddressPost = async (req, res) => {
     console.log(orderIdString, "order string");
     // Find and delete the cart items for the user
     await Cart.findOneAndDelete({ userId: cart.userId });
-    if (req.body["payment-method"] == "COD")
+    if (req.body["payment-method"] == "COD") {
       res.json({ codSuccess: true });
+    } else if(req.body["payment-method"] == "RazorPay") {
+      console.log( orderDoc._id, "iddddddd of order")
+      var options = {
+        amount: orderDoc.totalAmount * 100,
+        currency: "INR",
+        receipt: orderIdString,
+      }
+      instance.orders.create( options, function ( err, order ) {
+        console.log(order, "new order")
+        res.json(order)
+      })
+    }  
+    
   } catch (error) {
     console.log(error);
   }
@@ -601,6 +624,7 @@ exports.savedAddressget = async (req, res) => {
 
     try {
       res.render("users/savedAddress", {
+        footer: true,
         user,
         cartCount,
         address,
@@ -612,6 +636,7 @@ exports.savedAddressget = async (req, res) => {
   } else {
     console.log("No address data found");
     res.render("users/savedAddress", {
+      footer: true,
       user,
       cartCount,
       address: [],
@@ -633,6 +658,7 @@ exports.editSavedAddress = async (req, res) => {
     );
     console.log(selectedAddress, "selectedAddress");
     res.render("users/editSavedAddress", {
+      footer: true,
       user,
       cartCount,
       address: selectedAddress,
@@ -716,13 +742,14 @@ exports.getProfile = async (req, res) => {
     const products = await Product.find();
     const categories = await Category.find();
     res.render('users/profile', {
-       products, 
-       user, 
-       categories, 
-       name: userDetails.name,
-       email: userDetails.email,
-       mobile: userDetails.mobile 
-      });
+      footer: true,
+      products,
+      user,
+      categories,
+      name: userDetails.name,
+      email: userDetails.email,
+      mobile: userDetails.mobile
+    });
   } catch (error) {
     console.log(error);
   }
@@ -730,8 +757,60 @@ exports.getProfile = async (req, res) => {
 
 exports.forgotPassword = async (req, res) => {
   try {
-    res.render('users/forgotPass', { other: true })
+    res.render('users/forgotPass', { other: true, footer: true })
   } catch (error) {
     console.log(error)
   }
 }
+
+exports.paymentVerify = async (req, res) => {
+  try {
+
+    let details = req.body;
+    
+    const crypto = require("crypto");
+    let hmac = crypto.createHmac("sha256", "F5CeQyznxe5ZoGru8KA6q8OS");
+    hmac.update(
+      details["payment[razorpay_order_id]"] +
+        "|" +
+        details["payment[razorpay_payment_id]"]
+    );
+    hmac = hmac.digest("hex");
+
+    let orderResponse = details["order[receipt]"];
+    let orderObjId = new ObjectId(orderResponse);
+
+    if (hmac === details["payment[razorpay_signature]"]) {
+     
+      await Order.updateOne(
+        { _id: orderObjId },
+        {
+          $set: {
+            paymentstatus: "placed",
+          },
+        }
+      );
+
+      console.log("Payment is successful");
+      res.json({ status: true });
+    } else {
+      await Order.updateOne(
+        { _id: orderObjId },
+        {
+          $set: {
+            paymentstatus: "failed",
+          },
+        }
+      );
+      console.log("Payment is failed");
+      res.json({ status: false, errMsg: "" });
+    }
+  } catch (error) {
+    console.log(error, "error");
+    res.status(500).send("Internal server error");
+  }
+};
+
+exports.paymentFailed = async (req, res) => {
+  res.render("users/paymentFailed", { other: true, footer: true });
+};

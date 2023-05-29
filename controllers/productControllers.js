@@ -50,25 +50,6 @@ exports.postProduct = async (req, res, next) => {
     }
 }
 
-// exports.getAllProducts = async (req, res) => {
-//     try {
-//         const products = await Product.find({});
-
-//         console.log(products);
-//         let adminDetails = req.session.admin;
-//         const categories = await Category.find();
-//         console.log(categories);
-//         // const subcategories = await SubCategory.find()
-//         console.log(req.session.notification);
-        
-//         res.render('admin/view-products', { admin: true, products, adminDetails, categories, msg: req.session.notification });
-//         req.session.notification=''
-//         req.session.save()
-//     } catch (error) {
-//         console.log(error);
-//     }
-// }
-
 exports.getAllProducts = async (req, res) => {
     try {
       const products = await Product.find({});

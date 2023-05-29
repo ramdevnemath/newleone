@@ -2,7 +2,7 @@
 	<%- body %>
 <% } else { %>
 	
-	<% if (locals.admin) { %>
+	<% if ( locals.admin ) { %>
 	    <%- include('../partials/admin/adminHead.ejs') %>
     	<%- body %>	
 		<%- include('../partials/admin/adminFooter.ejs') %>	  
@@ -13,7 +13,7 @@
 		<%- include('../partials/user/userHead.ejs') %>
 		<%- include('../partials/user/userHeader.ejs') %>
     	<%- body %>
-		<% if (locals.footer) { %>
+		<% if ( locals.footer ) { %>
 			<%- include('../partials/user/userFooter.ejs') %>
 		<% } %>
 	  	<%- include('../partials/user/userScript.ejs') %>

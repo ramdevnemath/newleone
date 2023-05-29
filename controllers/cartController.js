@@ -3,6 +3,11 @@ const mongoose = require('mongoose');
 const User = require("../models/userSchema");
 const ObjectId = mongoose.Types.ObjectId;
 const Product = require("../models/productSchema");
+const bcrypt = require("bcrypt");
+const { response } = require("../app");
+const flash = require("connect-flash");
+const { success } = require("toastr");
+const { json } = require("body-parser");
 
 
 exports.addtoCart = async (req, res) => {
@@ -10,11 +15,11 @@ exports.addtoCart = async (req, res) => {
   const userId = req.session.user._id; // we will get user id here
   console.log(productId);
   console.log(userId);
-  console.log(req.query.size);
-  let proPrice = await Product.findOne({ _id: req.params.id });
-  let taxAmount = Math.floor((proPrice.price / 100) * 12);
-  console.log(taxAmount);
-  console.log(proPrice);
+  console.log(req.query.size, "size");
+  let addedProduct = await Product.findOne({ _id: req.params.id });
+  let taxAmount = Math.floor((addedProduct.price / 100) * 12);
+  console.log(taxAmount, "taxxxxxxxxxxx");
+  console.log(addedProduct, "addedProduct");
 
   console.log("worked");
   try {
@@ -22,7 +27,8 @@ exports.addtoCart = async (req, res) => {
     let proObj = {
       item: productId,
       quantity: quantity,
-      currentPrice: proPrice.price,
+      currentPrice: addedProduct.price,
+      stock: addedProduct.stock,
       tax: taxAmount,
       size: req.query.size,
       deliverystatus: "not-shipped",
@@ -89,6 +95,7 @@ exports.cartCount = async (req, res, next) => {
     console.log(error);
   }
 };
+
 exports.productSizeSelector = async (req, res) => {
   let proId = req.query.proId;
   console.log(proId, 'product id')
@@ -102,7 +109,7 @@ exports.productSizeSelector = async (req, res) => {
         }
       }
     });
-    console.log(cartItem, 'valeu')
+    console.log(cartItem, 'value')
     if (cartItem) {
       return res.json(true)
     } else {
@@ -161,7 +168,7 @@ exports.getCartProducts = async (req, res) => {
           },
         },
       ]);
-      console.log(cartItems);
+      console.log(cartItems, "cartItems");
 
       let total = await Cart.aggregate([
         {
@@ -211,10 +218,10 @@ exports.getCartProducts = async (req, res) => {
         },
       ]);
 
-      console.log(total);
+      console.log(total, "chck hereeeeee");
 
-      console.log(cartItems, "cart");
-      console.log(total, "dispak");
+      console.log(cartItems, "cartItems");
+      console.log(total, "total");
       let subtotal = 0;
       let tax = 0;
       let totalWithTax = 0;
@@ -223,7 +230,7 @@ exports.getCartProducts = async (req, res) => {
         tax = total[0].totalTax;
         totalWithTax = total[0].totalWithTax;
       }
-      console.log(total);
+      console.log(total, "total");
 
 
       const cartCount = req.cartCount;
@@ -235,6 +242,8 @@ exports.getCartProducts = async (req, res) => {
         cartIcon: true,
         total,
         subtotal,
+        tax,
+        totalWithTax,
       });
     } catch (error) {
       console.log(error);
@@ -245,27 +254,8 @@ exports.getCartProducts = async (req, res) => {
 };
 
 exports.changeProductQuantity = async (req, res) => {
-  // const { product, cart, count, quantity } = req.body;
-  // const parsedCount = parseInt(count);
-  // const parsedQuantity = parseInt(quantity);
-  // console.log(parsedQuantity);
-  // const cartId = cart;
-  // const productId = product;
-  // // Convert cartId to ObjectId
-  // const objectIdCartId = new ObjectId(cartId);
-  // const objectIdproductId = new ObjectId(productId);
 
   try {
-    // console.log("inside the try");
-    // console.log("parsedCount:", parsedCount);
-    // console.log("parsedQuantity:", parsedQuantity);
-    // console.log("objectIdCartId:", objectIdCartId);
-    // console.log("objectIdproductId:", objectIdproductId);
-
-    // let cart = await Cart.findOne({});
-    // let userId = cart.userId;
-    // console.log(userId);
-    // let userId = req.session.user._id;
     const response = {};
     let cart = req.body.cart;
     console.log(cart, "...........");
@@ -340,16 +330,16 @@ exports.changeProductQuantity = async (req, res) => {
                 $multiply: ["$quantity", { $add: ["$tax", "$currentPrice"] }],
               },
             },
-          },
+          }
         },
       ]);
 
-      console.log(total, "////////");
-      // response.status = true;
-      res.json({ success: true, total });
-      console.log("else worked");
+    console.log(total, "////////");
+    // response.status = true;
+    res.json({ success: true, total });
+    console.log("else worked");
     }
-    
+
   } catch (error) {
     console.error(error);
   }
@@ -420,7 +410,7 @@ exports.removeItem = async (req, res) => {
 
     let response = {};
     if (displayTotal.length === 0) {
-     
+
       response.subtotal = 0;
       response.tax = 0;
       response.totalWithTax = 0;
@@ -429,7 +419,7 @@ exports.removeItem = async (req, res) => {
       let subtotal = displayTotal[0].total;
       let tax = displayTotal[0].totalTax;
       let totalWithTax = displayTotal[0].totalWithTax;
-  
+
       response.subtotal = subtotal;
       response.tax = tax;
       response.totalWithTax = totalWithTax;
@@ -439,7 +429,11 @@ exports.removeItem = async (req, res) => {
   } catch (error) {
     console.log(error);
   }
+
+
 };
+
+
 
 
 exports.checkLogin = async (req, res) => {
@@ -455,3 +449,36 @@ exports.checkLogin = async (req, res) => {
     });
   }
 }
+
+exports.getCartTotals = async (req, res) => {
+  try {
+    const totals = await Cart.aggregate([
+      {
+        $match: { user: req.session.userId },
+      },
+      {
+        $unwind: "$products",
+      },
+      {
+        $project: {
+          quantity: "$products.quantity",
+          currentPrice: "$products.currentPrice",
+          tax: "$products.tax",
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: { $multiply: ["$quantity", "$currentPrice"] } },
+          totalTax: { $sum: { $multiply: ["$quantity", "$tax"] } },
+          totalWithTax: { $sum: { $multiply: ["$quantity", { $add: ["$currentPrice", "$tax"] }] } },
+        },
+      },
+    ]);
+
+    res.json({ total: totals });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};

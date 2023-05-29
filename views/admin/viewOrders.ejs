@@ -16,81 +16,8 @@
     border-color: #1e7e34;
   }
 </style>
-<nav class="navbar navbar-expand-xl">
-  <div class="container h-100">
-    <a class="navbar-brand" href="/admin/index">
-      <h1 class="tm-site-title mb-0">Product Admin</h1>
-    </a>
-    <button class="navbar-toggler ml-auto mr-0" type="button" data-toggle="collapse"
-      data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-      aria-label="Toggle navigation">
-      <i class="fas fa-bars tm-nav-icon"></i>
-    </button>
+<%- include('../partials/admin/adminHeader.ejs') %>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav mx-auto h-100">
-        <li class="nav-item">
-          <a class="nav-link" href="/admin/home">
-            <i class="fas fa-tachometer-alt"></i>
-            Dashboard
-            <span class="sr-only">(current)</span>
-          </a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link active" href="/admin/orders" id="" role="button">
-            <i class="far fa-file-alt"></i>
-            <span>
-              Orders
-            </span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/admin/products">
-            <i class="fas fa-shopping-cart"></i>
-            Products
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link" href="/admin/users">
-            <i class="far fa-user"></i>
-            Users
-          </a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false">
-            <i class="fas fa-cog"></i>
-            <span>
-              Settings <i class="fas fa-angle-down"></i>
-            </span>
-          </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="#">Profile</a>
-            <a class="dropdown-item" href="#">Billing</a>
-            <a class="dropdown-item" href="#">Customize</a>
-          </div>
-        </li>
-      </ul>
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link d-block" href="/admin/logout">
-            Admin, <b>Logout</b>
-          </a>
-        </li>
-      </ul>
-    </div>
-  </div>
-</nav>
-<nav aria-label="Page navigation example" class="mt-2 mr-3">
-  <ul class="pagination pagination-sm justify-content-end">
-    <% for( let i=1; i <=pages; i++ ) { %>
-      <li class="page-item"><a class="page-link cursor-pointer pagination-button" data-page="<%= i %>">
-          <%= i %>
-        </a></li>
-      <% } %>
-  </ul>
-</nav>
 <div class="container-fluid">
   <div class="row">
     <div class="col-md-12">
@@ -196,6 +123,15 @@
                   <% }) %>
           </tbody>
         </table>
+        <nav aria-label="Page navigation example" class="mt-2 mr-3">
+          <ul class="pagination pagination-sm justify-content-end">
+            <% for( let i=1; i <=pages; i++ ) { %>
+              <li class="page-item"><a class="page-link cursor-pointer pagination-button" data-page="<%= i %>">
+                  <%= i %>
+                </a></li>
+              <% } %>
+          </ul>
+        </nav>
       </div>
     </div>
   </div>

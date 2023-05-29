@@ -116,15 +116,14 @@
                 </td>
                 <td>
                   <a type="button" class="btn btn-outline-danger" <%=prd.orderstatus==='cancelled' ? 'hidden' : '' %> onclick="cancelOrder('<%= order._id %>','<%= prd.item._id %>')">Cancel</a>
+                  <a type="button" class="btn btn-outline-warning" <%=prd.orderstatus==='cancelled' ? 'hidden' : '' %> onclick="cancelOrder('<%= order._id %>','<%= prd.item._id %>')">Return</a>
                 </td>
               </tr>
             <% }) %>
-            
           </tbody>
       </div>
     </div>
   </div>
-
   <script>
 
     function cancelOrder(orderId, productId) {
@@ -154,4 +153,3 @@
     }
 
   </script>
-</body>

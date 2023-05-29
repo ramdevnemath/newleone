@@ -3,6 +3,7 @@ var router = express.Router()
 const productController = require('../controllers/productControllers')
 const adminController = require('../controllers/adminControllers')
 const userController = require('../controllers/userControllers')
+const couponController = require('../controllers/couponControllers')
 const multer = require('multer')
 const storage = multer.diskStorage({
   destination: function (req, files, cb) {
@@ -14,7 +15,7 @@ const storage = multer.diskStorage({
 })
 const upload = multer({ storage: storage });
 
-
+router.get('/', adminauth, adminController.adminLogin)
 router.get('/login', adminauth, adminController.adminLogin)
 router.post('/postLogin', adminController.postAdminLogin)
 router.get('/products', verify, productController.getAllProducts)
@@ -38,6 +39,13 @@ router.get('/orders', adminController.viewOrders)
 router.get('/orderedProducts/:id', adminController.orderedProducts)
 router.post('/order-details/', adminController.orderStatus)
 router.patch("/loadOrder", adminController.loadOrderData)
+//coupon controller
+router.get('/coupon',couponController.couponPage)
+router.post('/coupon',couponController.postCoupon)
+router.patch('/coupon-disable/:id',couponController.disableCoupon)
+router.patch('/coupon-enable/:id',couponController.enableCoupon)
+router.get('/edit-coupon',couponController.editCoupon)
+router.post('/update-coupon',couponController.updateCoupon)
 
 function previewImage(input) {
   if (input.files && input.files[0]) {

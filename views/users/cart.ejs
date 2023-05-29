@@ -16,178 +16,172 @@
                 class="text-body">price <i class="fas fa-angle-down mt-1"></i></a></p>
           </div>
         </div>
-        <% cartItems.forEach(item=> { %>
-          <div id="itemList" class="card rounded-3 mb-4">
-            <div class="card-body p-4">
-              <div class="row d-flex justify-content-between align-items-center">
-                <div class="col-md-2 col-lg-2 col-xl-2">
-                  <img src="/admin/uploads/<%= item.productInfo.image[0] %>" class="img-fluid rounded-3"
-                    alt="Cotton T-shirt">
-                </div>
-                <div class="col-md-3 col-lg-3 col-xl-3">
-                  <p class="lead fw-normal mb-2">
-                    <%= item.productInfo.productName %>
-                  </p>
-                  <p><span class="text-muted">Size: </span>
-                    <%= item.size %> <span class="text-muted"></span>
-                  </p>
-                </div>
-                <div class="col-md-3 col-lg-3 col-xl-2 d-flex total">
-                  <a class="btn btn-link px-2"
-                    onclick="changeQuantity('<%= item._id %>','<%= item.unique_id %>','<%= user._id %>',-1,'<%= item.currentPrice %>','<%= item.productInfo.stock %>')">
-                    <i class="fa fa-minus"></i>
-                  </a>
-                  <b id="<%= item.unique_id %>" style="margin-right: 5px;">
-                    <%= item.quantity %>
-                  </b>
-                  <a class="btn btn-link px-2"
-                    onclick="changeQuantity('<%= item._id %>','<%= item.unique_id %>','<%= user._id %>',1,'<%= item.currentPrice %>','<%= item.productInfo.stock %>')">
-                    <i class="fa fa-plus"></i>
-                  </a>
-                </div>
-                <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
-                  <h5 class="mb-0">$<%= item.currentPrice %>
-                  </h5>
-                </div>
-                <div class="col-md-1 col-lg-1 col-xl-1 text-end">
-                  <a class="text-danger btn-hover"
-                    onclick="removeItem('<%=item._id%>','<%=item.unique_id%>','<%= user._id %>')"><i
-                      class="fa fa-trash fa-lg"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-          <% }) %>
-            <div class="card mb-4">
-              <div class="card-body p-4 d-flex flex-row">
-                <div class="form-outline flex-fill">
-                  <input type="text" id="form1" class="form-control form-control-lg" />
-                  <label class="form-label" for="form1">Discound code</label>
-                </div>
-                <button style="height: 50px;" type="button"
-                  class="ml-4 btn btn-outline-warning btn-lg ms-3">Apply</button>
-              </div>
-            </div>
-            <div class="row justify-content-start">
-              <div class="col col-lg-5 col-md-6 mt-5 cart-wrap ftco-animate">
-                <div class="cart-total mb-3">
-                  <h3>Cart Totals</h3>
-                  <p class="d-flex">
-                    <span>Total :</span>
-                    <span id="totalPrice">
-                      $<%= locals.subtotal %>
-                    </span>
-                  </p>
-                  <!-- <p class="d-flex">
-                    <span>Tax :</span>
-                    <span id="adTax">
-                      $<%#= locals.tax %>
-                    </span>
-                  </p> -->
-                  <hr>
-                  <!-- <p class="d-flex total-price">
-                    <span>Total :</span>
-                    <%# if (total.length) { %>
-                      <span id="taxWithTotal"> $<%#=locals.totalWithTax %></span>
-                      <%# }else{ %>
-
-                        <span id="total">0</span>
-
-                        <%# } %>
-                  </p> -->
-                </div>
-                <div class="card">
-                  <div class="card-body">
-                    <a href="/address" type="button" class="btn btn-warning btn-block btn-lg">Proceed to Pay</a>
+        <% if (cartItems.length==0) { %>
+          <img src="/user/img/SeekPng.com_cart-png_1170538.png" alt="">
+          <% } else { %>
+            <% cartItems.forEach(item=> { %>
+              <div id="itemList" class="card rounded-3 mb-4">
+                <div class="card-body p-4">
+                  <div class="row d-flex justify-content-between align-items-center">
+                    <div class="col-md-2 col-lg-2 col-xl-2">
+                      <img src="/admin/uploads/<%= item.productInfo.image[0] %>" class="img-fluid rounded-3"
+                        alt="Cotton T-shirt">
+                    </div>
+                    <div class="col-md-3 col-lg-3 col-xl-3">
+                      <p class="lead fw-normal mb-2">
+                        <%= item.productInfo.productName %>
+                      </p>
+                      <p><span class="text-muted">Size: </span>
+                        <%= item.size %> <span class="text-muted"></span>
+                      </p>
+                    </div>
+                    <div class="col-md-3 col-lg-3 col-xl-2 d-flex total">
+                      <a class="btn btn-link px-2"
+                        onclick="changeQuantity('<%= item._id %>','<%= item.unique_id %>','<%= user._id %>',-1,'<%= item.currentPrice %>','<%= item.productInfo.stock %>')">
+                        <i class="fa fa-minus"></i>
+                      </a>
+                      <b id="<%= item.unique_id %>" style="margin-right: 5px;">
+                        <%= item.quantity %>
+                      </b>
+                      <a class="btn btn-link px-2"
+                        onclick="changeQuantity('<%= item._id %>','<%= item.unique_id %>','<%= user._id %>',1,'<%= item.currentPrice %>','<%= item.productInfo.stock %>')">
+                        <i class="fa fa-plus"></i>
+                      </a>
+                    </div>
+                    <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+                      <h5 class="mb-0">$<%= item.currentPrice %>
+                      </h5>
+                    </div>
+                    <div class="col-md-1 col-lg-1 col-xl-1 text-end">
+                      <a class="text-danger btn-hover"
+                        onclick="removeItem('<%=item._id%>','<%=item.unique_id%>','<%= user._id %>')"><i
+                          class="fa fa-trash fa-lg"></i></a>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-      </div>
-</section>
+              <% })} %>
+                <div class="row justify-content-start">
+                  <div class="col col-lg-5 col-md-6 mt-5 cart-wrap ftco-animate">
+                    <div class="cart-total mb-3">
+                      <h3>Cart Totals</h3>
+                      <p class="d-flex">
+                        <span>Subtotal = </span>
+                        <span id="totalPrice">
+                          $<%= subtotal %>
+                        </span>
+                      </p>
+                      <p class="d-flex">
+                        <span>Tax = </span>
+                        <span id="adTax">
+                          $<%= tax %>
+                        </span>
+                      </p>
+                      <hr>
+                      <p class="d-flex total-price">
+                        <span>Total</span>
+                        <% if ( total.length ) { %>
+                          <span id="taxWithTotal">$<%= totalWithTax %></span>
+                          <% }else{ %>
 
+                            <span id="total">0</span>
+
+                            <% } %>
+                      </p>
+                    </div>
+                    <a style="color: white;" href="/address" class="btn btn-warning py-3 px-4"> Proceed to Checkout </a>
+                  </div>
+                </div>
+      </div>
+
+
+
+
+
+    </div>
+</section>
+<%- include('../partials/user/userFooter.ejs') %>
 <script>
 
   const couponInput = document.querySelector('#coupon-code');
-  // const applyCouponBtn = document.querySelector('#apply-coupon-btn');
-  // const couponMessage = document.querySelector('#coupon-message');
+  const applyCouponBtn = document.querySelector('#apply-coupon-btn');
+  const couponMessage = document.querySelector('#coupon-message');
 
 
   function changeQuantity(cartId, proId, userId, count, salePrice, stock) {
     console.log(userId)
     console.log(proId)
+    count = parseInt(count)
     let quantity = document.getElementById(proId).innerHTML
     quantity = parseInt(document.getElementById(proId).innerHTML);
-    count = parseInt(count)
     console.log(quantity)
     console.log(count)
-    if (quantity + count > stock) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Quantity exceeds available stock",
+    if (count + quantity > stock) {
+      swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Out of stock',
       })
       return;
-    } else {
-      $.ajax({
-        url: '/changeProductQuantity',
-        data: {
-          cart: cartId,
-          product: proId,
-          user: userId,
-          count: count,
-          quantity: quantity
-        },
-        method: 'post',
-        success: (response) => {
-          document.getElementById(proId).innerHTML = quantity + count;
-          if (response.removeProduct) {
-            console.log('///////////////')
-            $('tr[data-product-id="' + proId + '"]').remove();
-
-            document.getElementById('totalPrice').innerHTML = "$" + response.subtotal;
-            // document.getElementById('adTax').innerHTML = "₹" + response.tax;
-            // document.getElementById('taxWithTotal').innerHTML = "₹" + response.totalWithTax;
-
-            Swal.fire({
-              icon: 'success',
-              title: 'Item removed',
-              timer: 2000 // Set a timer to automatically close the message after 2 seconds
-            }).then(() => {
-              location.reload(); // Reload the page
-            });
-
-
-          } else {
-
-
-            console.log(response)
-            document.getElementById(proId).innerHTML = quantity + count;
-
-            // let abc= document.getElementById(proId).innerHTML = parseInt(response.quantity) ;
-            // document.getElementById('subtotal-' + proId).innerHTML = 'Rs. ' + abc*salePrice;
-
-            document.getElementById('totalPrice').innerHTML = "$" + response.total[0].total;
-            // document.getElementById('adTax').innerHTML = "₹" + response.total[0].totalTax;
-            // document.getElementById('taxWithTotal').innerHTML = "₹" + response.total[0].totalWithTax;
-
-          }
-        },
-      });
     }
+    if (count == -1 && quantity == 1) {
+      return;
+    }
+    $.ajax({
+      url: '/changeProductQuantity',
+      data: {
+        cart: cartId,
+        product: proId,
+        user: userId,
+        count: count,
+        quantity: quantity,
+        stock: stock,
+      },
+      method: 'post',
+      success: (response) => {
+
+        console.log(response)
+        document.getElementById(proId).innerHTML = quantity + count;
+
+        // let abc= document.getElementById(proId).innerHTML = parseInt(response.quantity) ;
+        // document.getElementById('subtotal-' + proId).innerHTML = 'Rs. ' + abc*salePrice;
+
+        document.getElementById('totalPrice').innerHTML = "$" + response.total[0].total;
+        document.getElementById('adTax').innerHTML = "$" + response.total[0].totalTax;
+        document.getElementById('taxWithTotal').innerHTML = "$" + response.total[0].totalWithTax;
+
+      },
+      complete: () => {
+        updateCartTotals();
+      },
+    });
   }
+
+  function updateCartTotals() {
+    $.ajax({
+      url: '/getCartTotals',
+      method: 'get',
+      success: (response) => {
+        document.getElementById('totalPrice').innerHTML = "$" + response.total[0].total;
+        document.getElementById('adTax').innerHTML = "$" + response.total[0].totalTax;
+        document.getElementById('taxWithTotal').innerHTML = "$" + response.total[0].totalWithTax;
+      },
+    });
+  }
+
+
 
 
 
   function removeItem(cartId, proId, userId) {
     Swal.fire({
       title: 'Are you sure?',
-      text: 'Do you want to remove this item?',
+      text: "You won't be able to revert this!",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, remove it!'
+      confirmButtonText: 'Yes, delete it!'
     }).then((result) => {
       if (result.isConfirmed) {
         $.ajax({
@@ -200,24 +194,37 @@
           method: 'post',
           success: (response) => {
             $('tr[data-product-id="' + proId + '"]').remove();
-            document.getElementById('totalPrice').innerHTML = "$" + response.subtotal;
-            // document.getElementById('adTax').innerHTML = "$" + response.tax;
-            // document.getElementById('taxWithTotal').innerHTML = "$" + response.totalWithTax;
+
+            document.getElementById('totalPrice').innerHTML = response.subtotal;
+            document.getElementById('adTax').innerHTML = response.tax;
+            document.getElementById('taxWithTotal').innerHTML = response.totalWithTax;
 
             Swal.fire(
               'Deleted!',
               'Your item has been deleted.',
               'success'
-            ).then(() => {
-              location.reload()
-              document.getElementById(proId).innerHTML = 0; // Set the quantity display to 0
-            });
+            );
+            location.reload(); // Reload the page
           }
         });
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        $('tr[data-product-id="' + proId + '"]').insertAfter($('tr[data-product-id]').last());
       }
     });
   }
 
+
+  applyCouponBtn.addEventListener('click', () => {
+    const couponCode = couponInput.value.trim();
+    if (couponCode) {
+      // Send coupon code to server and update the UI accordingly
+      // ...
+      // If coupon is valid and applied successfully, show success message and update UI
+      couponMessage.innerHTML = `<div class="alert alert-success" role="alert">Coupon "${couponCode}" applied successfully!</div>`;
+    } else {
+      couponMessage.innerHTML = `<div class="alert alert-danger" role="alert">Please enter a valid coupon code!</div>`;
+    }
+  });
 
   function applyCoupon() {
 
@@ -261,7 +268,7 @@
             alertify.error('Invalid coupon code');
             location.reload();
 
-            //  document.getElementById("taxWithTotal").innerHTML = total;
+            document.getElementById("taxWithTotal").innerHTML = total;
 
           } else if (response.success == true) {
             console.log(response.discountAmount);
@@ -285,6 +292,26 @@
       });
 
     }
+  }
+
+  function updateCartTotals() {
+    $.ajax({
+      url: '/getCartTotals',
+      method: 'get',
+      success: (response) => {
+        const total = response.total[0].total;
+        const tax = response.total[0].totalTax;
+        const totalWithTax = response.total[0].totalWithTax;
+
+        // Update the displayed values on the page
+        document.getElementById('totalPrice').innerHTML = "$" + total;
+        document.getElementById('adTax').innerHTML = "$" + tax;
+        document.getElementById('taxWithTotal').innerHTML = "$" + totalWithTax;
+      },
+      error: (error) => {
+        console.error(error);
+      }
+    });
   }
 
   // Disable right-click context menu

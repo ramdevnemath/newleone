@@ -12,188 +12,134 @@
       border-radius: 50%;
     }
   </style>
+  <%- include('../partials/admin/adminHeader.ejs') %>
 
-  <body id="reportsPage">
-    <nav class="navbar navbar-expand-xl">
-      <div class="container h-100">
-        <a class="navbar-brand" href="/admin/home">
-          <h1 class="tm-site-title mb-0">Product Admin</h1>
-        </a>
-        <button class="navbar-toggler ml-auto mr-0" type="button" data-toggle="collapse"
-          data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-          aria-label="Toggle navigation">
-          <i class="fas fa-bars tm-nav-icon"></i></button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav mx-auto h-100">
-            <li class="nav-item">
-              <a class="nav-link" href="/admin/home">
-                <i class="fas fa-tachometer-alt"></i> Dashboard
-                <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link" href="/admin/orders" id="" role="button">
-                <i class="far fa-file-alt"></i>
-                <span>
-                  Orders
-                </span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" href="/admin/products">
-                <i class="fas fa-shopping-cart"></i> Products</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/admin/users">
-                <i class="far fa-user"></i> Users</a>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-cog"></i>
-                <span> Settings <i class="fas fa-angle-down"></i> </span></a>
-              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="#">Profile</a>
-                <a class="dropdown-item" href="#">Billing</a>
-                <a class="dropdown-item" href="#">Customize</a>
-              </div>
-            </li>
-          </ul>
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link d-block" href="/admin/logout">
-                Admin, <b>Logout</b></a>
-            </li>
-          </ul>
+    <body id="reportsPage">
+      <% if (msg) { %>
+        <div id="notification" class="alert alert-success alert-dismissible fade show" role="alert">
+          <strong>
+            <%= msg %>
+          </strong>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
-      </div>
-    </nav>
-    <% if (msg) { %>
-      <div id="notification" class="alert alert-success alert-dismissible fade show" role="alert">
-        <strong>
-          <%= msg %>
-        </strong>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <% } %>
-        <div class="container mt-5">
-          <div class="row tm-content-row">
-            <div class="col-sm-12 col-md-12 col-lg-8 col-xl-8 tm-block-col">
-              <div class="tm-bg-primary-dark tm-block tm-block-products">
-                <div class="tm-product-table-container">
-                  <table class="table table-hover tm-table-small tm-product-table" id="tableid">
-                    <thead>
-                      <tr>
-                        <th scope="col">IMAGE</th>
-                        <th scope="col">PRODUCT NAME</th>
-                        <th scope="col">COMPANY</th>
-                        <th scope="col">PRICE</th>
-                        <th scope="col">CATEGORY</th>
-                        <th scope="col">DELETED</th>
-                        <th scope="col">OPTIONS</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <% products.forEach((item)=> { %>
+        <% } %>
+          <div class="container mt-5">
+            <div class="row tm-content-row">
+              <div class="col-sm-12 col-md-12 col-lg-8 col-xl-8 tm-block-col">
+                <div class="tm-bg-primary-dark tm-block tm-block-products">
+                  <div class="tm-product-table-container">
+                    <table class="table table-hover tm-table-small tm-product-table" id="tableid">
+                      <thead>
                         <tr>
-                          <td><img style="width: 50px; height: 50px" src="/admin/uploads/<%= item.image[0] %>" alt="" />
-                          </td>
-                          <td class="tm-product-name">
-                            <%= item.productName %>
-                          </td>
-                          <td>
-                            <%= item.company %>
-                          </td>
-                          <td>
-                            <%= item.price %>
-                          </td>
-                          <td>
-                            <% const category=categories.find((cat)=> cat.id.toString() === item.category.toString());
-                              if (category) {
-                              %>
-                              <%= category.category %>
-                                <% } else { %>
-                                  404
-                                  <% } %>
-                          </td>
-                          <td>
-                            <%= item.deleted ? 'Yes' : 'No' %>
-                          </td>
-                          <td class="text-center">
-                            <div style="display: flex;">
-                              <a href="/admin/edit-product/<%= item._id %>">
-                                <button class="edit-button-style fas fa-edit tm-product-edit-icon"></button></a>
-                              <form action="/admin/deleteProduct/<%=item._id%>?_method=DELETE" method="POST"
-                                style="display: inline-block">
-                                <a href="#" class="tm-product-delete-link">
-                                  <i class="far fa-trash-alt tm-product-delete-icon"
-                                    onclick="confirmDelete('<%=item.productname%>', '<%=item._id%>')"></i></a>
-                              </form>
-                            </div>
-                          </td>
+                          <th scope="col">IMAGE</th>
+                          <th scope="col">PRODUCT NAME</th>
+                          <th scope="col">COMPANY</th>
+                          <th scope="col">PRICE</th>
+                          <th scope="col">CATEGORY</th>
+                          <th scope="col">DELETED</th>
+                          <th scope="col">OPTIONS</th>
                         </tr>
-                        <% }) %>
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        <% products.forEach((item)=> { %>
+                          <tr>
+                            <td><img style="width: 50px; height: 50px" src="/admin/uploads/<%= item.image[0] %>"
+                                alt="" />
+                            </td>
+                            <td class="tm-product-name">
+                              <%= item.productName %>
+                            </td>
+                            <td>
+                              <%= item.company %>
+                            </td>
+                            <td>
+                              <%= item.price %>
+                            </td>
+                            <td>
+                              <% const category=categories.find((cat)=> cat.id.toString() === item.category.toString());
+                                if (category) {
+                                %>
+                                <%= category.category %>
+                                  <% } else { %>
+                                    404
+                                    <% } %>
+                            </td>
+                            <td>
+                              <%= item.deleted ? 'Yes' : 'No' %>
+                            </td>
+                            <td class="text-center">
+                              <div style="display: flex;">
+                                <a href="/admin/edit-product/<%= item._id %>">
+                                  <button class="edit-button-style fas fa-edit tm-product-edit-icon"></button></a>
+                                <form action="/admin/deleteProduct/<%#=item._id%>?_method=DELETE" method="POST"
+                                  style="display: inline-block">
+                                  <a href="#" class="tm-product-delete-link">
+                                    <i class="far fa-trash-alt tm-product-delete-icon"
+                                      onclick="confirmDelete('<%=item.productname%>', '<%=item._id%>')"></i></a>
+                                </form>
+                              </div>
+                            </td>
+                          </tr>
+                          <% }) %>
+                      </tbody>
+                    </table>
+                  </div>
+                  <a href="add-product" class="btn btn-primary btn-block text-uppercase mb-3">Add new product</a>
                 </div>
-                <!-- table container -->
-                <a href="add-product" class="btn btn-primary btn-block text-uppercase mb-3">Add new product</a>
               </div>
-            </div>
-            <div class="col-sm-12 col-md-12 col-lg-4 col-xl-4 tm-block-col">
-              <div class="tm-bg-primary-dark tm-block tm-block-product-categories">
-                <h2 class="tm-block-title">Product Categories</h2>
-                <div class="tm-product-table-container">
-                  <table class="table tm-table-small tm-product-table">
-                    <tbody>
-                      <% categories.forEach((item)=> {
-                        if (!item.delete) { // Exclude categories with deleted field set to true
-                        %>
-                        <tr>
-                          <td class="tm-product-name">
-                            <%= item.category %>
-                          </td>
-                          <td class="text-center">
-                            <a href="/admin/edit-category/<%= item._id %>">
-                              <button class="edit-button-style fas fa-edit tm-product-edit-icon"></button>
-                            </a>
-                          </td>
-                          <td class="text-center">
-                            <form action="/admin/deleteCategory/<%= item._id %>?_method=DELETE" method="POST"
-                              style="display: inline-block">
+              <div class="col-sm-12 col-md-12 col-lg-4 col-xl-4 tm-block-col">
+                <div class="tm-bg-primary-dark tm-block tm-block-product-categories">
+                  <h2 class="tm-block-title">Product Categories</h2>
+                  <div class="tm-product-table-container">
+                    <table class="table tm-table-small tm-product-table">
+                      <tbody>
+                        <% categories.forEach((item)=> {
+                          if (!item.delete) { // Exclude categories with deleted field set to true
+                          %>
+                          <tr>
+                            <td class="tm-product-name">
+                              <%= item.category %>
+                            </td>
+                            <td class="text-center">
+                              <a href="/admin/edit-category/<%= item._id %>">
+                                <button class="edit-button-style fas fa-edit tm-product-edit-icon"></button>
+                              </a>
+                            </td>
+                            <td class="text-center">
+
                               <a href="#" class="tm-product-delete-link">
                                 <i class="far fa-trash-alt tm-product-delete-icon"
                                   onclick="categoryDelete('<%= item.category %>', '<%= item._id %>')"></i>
                               </a>
-                            </form>
-                          </td>
-                        </tr>
-                        <% } }) %>
-                    </tbody>
-                  </table>
+
+                            </td>
+                          </tr>
+                          <% } }) %>
+                      </tbody>
+                    </table>
+                  </div>
+                  <a href="add-category">
+                    <button class="btn btn-primary btn-block text-uppercase mb-3">
+                      Add new category
+                    </button></a>
                 </div>
-                <!-- table container -->
-                <a href="add-category">
-                  <button class="btn btn-primary btn-block text-uppercase mb-3">
-                    Add new category
-                  </button></a>
               </div>
             </div>
           </div>
-        </div>
-  </body>
-  <%- include('../partials/admin/adminScript.ejs') %>
-    <script>
-      setTimeout(function () {
-        document.getElementById('notification').style.display = 'none'
-      }, 3000)
-      document.getElementById("myForm").addEventListener("submit", function (event) {
-        event.preventDefault(); // Prevent the default form submission
-      });
-      function confirmDelete(productName, productId) {
-        // Create modal markup
-        let confirmDeleteModal = `
+    </body>
+    <%- include('../partials/admin/adminScript.ejs') %>
+      <script>
+        setTimeout(function () {
+          document.getElementById('notification').style.display = 'none'
+        }, 3000)
+        document.getElementById("myForm").addEventListener("submit", function (event) {
+          event.preventDefault(); // Prevent the default form submission
+        });
+        function confirmDelete(productName, productId) {
+          // Create modal markup
+          let confirmDeleteModal = `
       <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -215,16 +161,16 @@
           </div>
         </div>
       </div>`;
-        // Append modal markup to the body
-        $('body').append(confirmDeleteModal);
+          // Append modal markup to the body
+          $('body').append(confirmDeleteModal);
 
-        // Show the modal
-        $('#confirmDeleteModal').modal('show');
-      }
+          // Show the modal
+          $('#confirmDeleteModal').modal('show');
+        }
 
-      function categoryDelete(category, catId) {
-        // Create modal markup
-        let categoryDeleteModal = `
+        function categoryDelete(category, catId) {
+          // Create modal markup
+          let categoryDeleteModal = `
       <div class="modal fade" id="categoryDeleteModal" tabindex="-1" aria-labelledby="categoryDeleteModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -246,17 +192,15 @@
           </div>
         </div>
       </div>`;
-        // Append modal markup to the body
-        $('body').append(categoryDeleteModal);
+          // Append modal markup to the body
+          $('body').append(categoryDeleteModal);
 
-        // Show the modal
-        $('#categoryDeleteModal').modal('show');
-      }
+          // Show the modal
+          $('#categoryDeleteModal').modal('show');
+        }
 
-      $(document).ready(function () {
-        $("#tableid").DataTable();
-      });
-    </script>
-    <!-- <%- include('../partials/admin/adminFooter.ejs') %> -->
-
-    </html>
+        $(document).ready(function () {
+          $("#tableid").DataTable();
+        });
+      </script>
+      <%#- include('../partials/admin/adminFooter.ejs') %>
