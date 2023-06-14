@@ -1,70 +1,71 @@
 const width_threshold = 480;
 
-function drawLineChart() {
-  if ($("#lineChart").length) {
-    ctxLine = document.getElementById("lineChart").getContext("2d");
-    optionsLine = {
-      scales: {
-        yAxes: [
-          {
-            scaleLabel: {
-              display: true,
-              labelString: "Hits"
-            }
-          }
-        ]
-      }
-    };
+// function drawLineChart(orderData) {
+//   if ($("#lineChart").length) {
+//     ctxLine = document.getElementById("lineChart").getContext("2d");
+//     optionsLine = {
+//       scales: {
+//         yAxes: [
+//           {
+//             scaleLabel: {
+//               display: true,
+//               labelString: "Hits",
+//             },
+//           },
+//         ],
+//       },
+//     };
 
-    // Set aspect ratio based on window width
-    optionsLine.maintainAspectRatio =
-      $(window).width() < width_threshold ? false : true;
+//     // Set aspect ratio based on window width
+//     optionsLine.maintainAspectRatio =
+//       $(window).width() < width_threshold ? false : true;
 
-    configLine = {
-      type: "line",
-      data: {
-        labels: [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July"
-        ],
-        datasets: [
-          {
-            label: "Latest Hits",
-            data: [88, 68, 79, 57, 50, 55, 70],
-            fill: false,
-            borderColor: "rgb(75, 192, 192)",
-            cubicInterpolationMode: "monotone",
-            pointRadius: 0
-          },
-          {
-            label: "Popular Hits",
-            data: [33, 45, 37, 21, 55, 74, 69],
-            fill: false,
-            borderColor: "rgba(255,99,132,1)",
-            cubicInterpolationMode: "monotone",
-            pointRadius: 0
-          },
-          {
-            label: "Featured",
-            data: [44, 19, 38, 46, 85, 66, 79],
-            fill: false,
-            borderColor: "rgba(153, 102, 255, 1)",
-            cubicInterpolationMode: "monotone",
-            pointRadius: 0
-          }
-        ]
-      },
-      options: optionsLine
-    };
+//     const monthLabels = [
+//       "January",
+//       "February",
+//       "March",
+//       "April",
+//       "May",
+//       "June",
+//       "July",
+//     ];
 
-    lineChart = new Chart(ctxLine, configLine);
-  }
-}
+//     const orderCounts = getOrderCountsByMonth(orderData, monthLabels);
+//     console.log(orderCounts)
+//     configLine = {
+//       type: "line",
+//       data: {
+//         labels: monthLabels,
+//         datasets: [
+//           {
+//             label: "Order Count",
+//             data: orderCounts,
+//             fill: false,
+//             borderColor: "rgb(75, 192, 192)",
+//             cubicInterpolationMode: "monotone",
+//             pointRadius: 0,
+//           },
+//         ],
+//       },
+//       options: optionsLine,
+//     };
+
+//     lineChart = new Chart(ctxLine, configLine);
+//   }
+// }
+
+// Function to calculate order counts for each month
+// function getOrderCountsByMonth(orderData, monthLabels) {
+//   const orderCounts = Array(monthLabels.length).fill(0);
+
+//   orderData.forEach((order) => {
+//     const orderMonth = new Date(order.createdAt).getMonth();
+//     orderCounts[orderMonth]++;
+//   });
+
+//   return orderCounts;
+// }
+
 
 function drawBarChart() {
   if ($("#barChart").length) {

@@ -30,9 +30,11 @@
                       <select class="form-control" id="category" name="category" required>
                         <option value="Select category" selected disabled></option>
                         <% categories.forEach(element=> { %>
-                          <option value="<%= element._id %>">
-                            <%= element.category %>
-                          </option>
+                          <% if (!element.delete) { %>
+                            <option value="<%= element._id %>">
+                              <%= element.category %>
+                            </option>
+                          <% } %>
                           <% }) %>
                             <!-- Add more options as needed -->
                       </select>
@@ -66,7 +68,7 @@
                       onclick="document.getElementById('image').click();"><img id="previewImage" src="" alt="" style="display:none; width: 357.5px; height: 350px;"></label>
                   </div>
                   <div class="custom-file mt-3 mb-3">
-                    <input multiple id="image" type="file" style="display:none;" name="image"
+                    <input multiple id="image" type="file" style="display:none;" name="image" accept="image/*"
                       onchange="previewFile()" />
                     <input multiple type="button" class="btn btn-primary btn-block mx-auto" value="UPLOAD PRODUCT IMAGE"
                       onclick="document.getElementById('image').click();" />

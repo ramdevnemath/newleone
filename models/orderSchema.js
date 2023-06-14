@@ -35,6 +35,9 @@ const orderSchema = new mongoose.Schema({
       orderstatus: {
         type: String,
       },
+      transactionId: {
+        type: String,
+      },
       deliverystatus: {
         type: String,
       },

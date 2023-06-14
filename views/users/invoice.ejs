@@ -1,0 +1,88 @@
+
+<body>
+  <div class="">
+    <div class="hero-wrap hero-bread" class="" style="background-image: url('/user/img/banner/banner-bg.jpg');">
+      <div class="container">
+        <div class="row no-gutters slider-text align-items-center justify-content-center">
+          <div style="height: 200px;" class="col-md-9 ftco-animate text-center">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container mt-5 border border-2 bg-success-subtle" id="printableArea" style="background-color: whitesmoke;">
+    <div class="row">
+        <div class="col-md-6">
+          <br>
+          <h2 class="fw-bold mb-3">Invoice</h2>
+          <hr>
+          <% orders.forEach(element => { %>
+            <div class="shipping-address mb-5">
+              <h4 class="mb-3">Shipping Address:</h4>
+              <p><%= element.deliveryDetails.firstname +' '+ element.deliveryDetails.lastname %></p>
+              <p><%= element.deliveryDetails.mobile %></p>
+              <p><%= element.deliveryDetails.streetaddress %></p>
+              <p><%= element.deliveryDetails.town %></p>
+              <p><%= element.deliveryDetails.state %></p>
+              <p><%= element.deliveryDetails.zip %></p>
+            </div>
+          <% }) %>
+        </div>
+        <div class="col-md-12">
+          <div class="table-responsive">
+            <table class="table table-hover table-bordered">
+              <thead class="thead-dark">
+                <tr>
+                  <th scope="col">Product Name</th>
+                  <th scope="col" class="text-right">Quantity</th>
+                  <th scope="col" class="text-right">Price</th>
+                  <th scope="col" class="text-right">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><%= product.item.productName %></td>
+                  <td class="text-right"><%= product.quantity %></td>
+                  <td class="text-right">&#8377; <%= product.item.price %></td>
+                  <td class="text-right">&#8377; <%= product.item.price * product.quantity %></td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="3" class="text-right">Subtotal:</td>
+                  <td class="text-right">&#8377; <%= product.currentPrice * product.quantity %></td>
+                </tr>
+                <tr>
+                  <td colspan="3" class="text-right">Shipping:</td>
+                  <td class="text-right">Free</td>
+                </tr>
+                <tr>
+                  <td colspan="3" class="text-right">Tax Amount:</td>
+                  <td class="text-right">&#8377; <%= product.tax * product.quantity%></td>
+                </tr>
+                <tr>
+                  <td colspan="3" class="text-right font-weight-bold">Grand Total:</td>
+                  <td class="text-right font-weight-bold">&#8377; <%= product.tax * product.quantity + product.currentPrice * product.quantity %></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+      </div>
+      <br><br>
+      <%- include('../partials/user/userFooter.ejs') %>
+  <script>
+    // Disable right-click context menu
+document.addEventListener('contextmenu', function(event) {
+  event.preventDefault();
+});
+
+  </script>
+
+  <!-- Bootstrap JS -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/>
+
+  

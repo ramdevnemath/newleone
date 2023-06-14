@@ -36,6 +36,7 @@
 </style>
 <%- include('../partials/admin/adminHead.ejs') %>
 <%- include('../partials/admin/adminHeader.ejs') %>
+<h2 style="text-align: center; color: #567086; margin-top: 10px;">COUPON MANAGEMENT</h2>
 <main class="content">
     <div id="loader">
         <span></span>
@@ -52,14 +53,14 @@
 
                                     <form action="/admin/coupon" id="cpn-gen-form" method="post">
                                         <div class="mb-3">
-                                            <label for="discount" class="form-label">Discount</label>
+                                            <label style="color: white;" for="discount" class="form-label">Discount</label>
                                             <div class="input-group">
                                                 <span class="input-group-text"><i class="bi bi-percent"></i></span>
                                                 <input type="text" name="discount" class="form-control" required>
                                             </div>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="minPurchase" class="form-label">Minimum Purchase</label>
+                                            <label style="color: white;" for="minPurchase" class="form-label">Minimum Purchase</label>
                                             <div class="input-group">
                                                 <span class="input-group-text"><i
                                                         class="bi bi-currency-dollar"></i></span>
@@ -67,10 +68,13 @@
                                             </div>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="expires" class="form-label">Expires On</label>
+                                            <label style="color: white;" for="expires" class="form-label">Expires On</label>
                                             <input type="date" name="expires" class="form-control" required>
                                         </div>
                                         <input type="text" name="couponCode" class="form-control" hidden>
+                                        <% if (error) { %>
+                                            <p class="error text-danger"><%= error %></p>
+                                        <% } %>   
                                         <div class="form-group mt-3">
                                             <button type="submit" class="btn btn-primary btn-block">Generate
                                                 Coupon</button>

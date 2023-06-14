@@ -80,10 +80,12 @@
                   <i style="width: 100px; height: auto" class="fas fa-cloud-upload-alt tm-upload-icon"
                     onclick="document.getElementById('image').click();"></i>
                 </div>
-                <div class="custom-file mt-3 mb-3">
-                  <input multiple id="image" name="image" type="file" style="display:none;" />
-                  <input multiple name="image" type="button" class="btn btn-primary btn-block mx-auto"
-                    value="CHANGE IMAGE NOW" onclick="document.getElementById('image').click();" />
+                  <div class="custom-file mt-3 mb-3">
+                    <input multiple id="image" type="file" style="display:none;" name="image" accept="image/*"
+                      onchange="previewFile()" />
+                    <input multiple type="button" class="btn btn-primary btn-block mx-auto" value="UPLOAD PRODUCT IMAGE"
+                      onclick="document.getElementById('image').click();" />
+                  </div>
                 </div>
               </div>
               <div class="col-12">
