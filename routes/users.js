@@ -16,7 +16,7 @@ router.get('/signup', userauth, userController.userSignup)
 router.post('/signup', userauth, userController.postSignup)
 router.get('/logout', verify, userController.logout)
 router.get('/single-product/:id', userController.userSingleProduct)
-router.get('/profile', userController.getProfile)
+// router.get('/profile', userController.getProfile)
 
 //otp route
 router.get('/otp', (req, res) => {
@@ -27,7 +27,7 @@ router.post('/otp', userController.otpLogin)
 router.post('/verifyotp', userController.verifyOtp)
 
 //add-to-cart route setting
-router.get('/addtoCart/:id', cartController.cartCount,cartController.addtoCart)   //userController.isLogin,
+router.get('/addtoCart/:id', cartController.cartCount,cartController.addtoCart) 
 router.get('/cart', cartController.cartCount, cartController.getCartProducts)
 router.post('/changeProductQuantity', cartController.changeProductQuantity)
 router.post('/removeItem', cartController.removeItem)
@@ -50,8 +50,13 @@ router.delete('/deleteAddress/:id', userController.deleteAddress)
 //order controller
 router.get('/orderPlaced', orderController.orderPlacedCod)
 router.get('/Orders', userController.isLogin, cartController.cartCount, orderController.orders)
-router.get('/viewOrderProducts/:id', userController.isLogin, cartController.cartCount, orderController.viewOrderProducts)
-router.get('/cancel-order/', userController.isLogin,orderController.cancelOrder)
+router.post('/orders/date', orderController.sortOrders)
+router.get('/cancel-order/', userController.isLogin, orderController.cancelOrder)
+router.get('/return-order/', userController.isLogin, orderController.returnOrder)
+router.get('/order-not-shipped', userController.isLogin, orderController.listOfNotShippedOrder)
+router.get('/order-cancelled-list', userController.isLogin, orderController.listOfCancelledOrder)
+router.get('/order-returned-list', userController.isLogin, orderController.listOfReturnedOrder)
+router.get('/invoice/', userController.isLogin, orderController.invoice)
 
 //coupon controller
 router.post('/apply-coupon',couponController.applyCoupon)
@@ -60,7 +65,13 @@ router.post('/apply-coupon',couponController.applyCoupon)
 router.post('/verify-payment', userController.paymentVerify)
 router.get('/payment-failed', userController.paymentFailed)
 
-router.get('/return-order/',userController.isLogin,orderController.returnOrder)
+//Profile
+router.get('/profile', userController.isLogin, cartController.cartCount, userController.userProfile)
+router.patch('/profile/:id', userController.editUserProfile)
+router.patch('/addressEdit', userController.addressEdit)
+router.post('/update-user-password', userController.confirmAndUpdatePassword)
+
+// router.get("/wallet", userController.walletPage);
 
 //middleware for preventing loading for strangers
 function userauth(req, res, next) {

@@ -13,13 +13,10 @@ const { json } = require("body-parser");
 exports.addtoCart = async (req, res) => {
   const productId = new ObjectId(req.params.id);
   const userId = req.session.user._id; // we will get user id here
-  console.log(productId);
-  console.log(userId);
-  console.log(req.query.size, "size");
   let addedProduct = await Product.findOne({ _id: req.params.id });
   let taxAmount = Math.floor((addedProduct.price / 100) * 12);
-  console.log(taxAmount, "taxxxxxxxxxxx");
-  console.log(addedProduct, "addedProduct");
+  const offerPrice = req.query.discount;
+  let proPrice = await Product.findOne({ _id: req.params.id });
 
   console.log("worked");
   try {
@@ -27,7 +24,7 @@ exports.addtoCart = async (req, res) => {
     let proObj = {
       item: productId,
       quantity: quantity,
-      currentPrice: addedProduct.price,
+      currentPrice: req.query.discount !=0 ? offerPrice : proPrice.price,
       stock: addedProduct.stock,
       tax: taxAmount,
       size: req.query.size,
@@ -35,14 +32,12 @@ exports.addtoCart = async (req, res) => {
       orderstatus: "processing",
     };
     let userCart = await Cart.findOne({ userId: new ObjectId(userId) });
-    console.log(userCart, "🔥🔥🔥🔥🔥");
     let cartCheckProId = req.params.id;
     if (userCart) {
       let proExist = userCart.products.findIndex(
         (product) =>
           product.item == cartCheckProId && product.size === req.query.size
       );
-      console.log(proExist);
       if (proExist > -1) {
         await Cart.updateOne(
           { userId, "products.item": productId, "products.size": req.query.size },
@@ -56,7 +51,6 @@ exports.addtoCart = async (req, res) => {
         userId: userId,
         products: [proObj],
       });
-      console.log(cartObj);
       await Cart.create(cartObj);
     }
     console.log("working");
@@ -83,13 +77,9 @@ exports.cartCount = async (req, res, next) => {
           (acc, product) => acc + product.quantity,
           0
         );
-        console.log(cartCount);
-        console.log(typeof (cartCount));
       }
     }
     req.cartCount = cartCount;
-    // res.locals.cartCount = cartCount; // Set cartCount as a property on req object
-    console.log(req.cartCount);
     next();
   } catch (error) {
     console.log(error);
@@ -98,7 +88,6 @@ exports.cartCount = async (req, res, next) => {
 
 exports.productSizeSelector = async (req, res) => {
   let proId = req.query.proId;
-  console.log(proId, 'product id')
   if (req.session.user) {
     let cartItem = await Cart.findOne({
       user: req.session.user._id,
@@ -109,7 +98,6 @@ exports.productSizeSelector = async (req, res) => {
         }
       }
     });
-    console.log(cartItem, 'value')
     if (cartItem) {
       return res.json(true)
     } else {
@@ -123,12 +111,13 @@ exports.productSizeSelector = async (req, res) => {
 
 exports.getCartProducts = async (req, res) => {
   let user = req.session.user;
-  let cartItems = [];
-
-  if (user) {
+  if (!user) {
+    res.redirect('/login')
+  } else {
     let userId = req.session.user._id;
     userId = userId.toString();
-    console.log(userId);
+    let cartItems = [];
+
     try {
       cartItems = await Cart.aggregate([
         {
@@ -164,11 +153,9 @@ exports.getCartProducts = async (req, res) => {
             currentPrice: 1,
             tax: 1,
             productInfo: { $arrayElemAt: ["$productInfo", 0] },
-            stock: "$productInfo.stock"
           },
         },
       ]);
-      console.log(cartItems, "cartItems");
 
       let total = await Cart.aggregate([
         {
@@ -214,14 +201,10 @@ exports.getCartProducts = async (req, res) => {
                 $multiply: ["$quantity", { $add: ["$tax", "$currentPrice"] }],
               },
             },
+            // total: { $sum: { $multiply: ["$quantity", "$productInfo.price"] } },
           },
         },
       ]);
-
-      console.log(total, "chck hereeeeee");
-
-      console.log(cartItems, "cartItems");
-      console.log(total, "total");
       let subtotal = 0;
       let tax = 0;
       let totalWithTax = 0;
@@ -230,7 +213,6 @@ exports.getCartProducts = async (req, res) => {
         tax = total[0].totalTax;
         totalWithTax = total[0].totalWithTax;
       }
-      console.log(total, "total");
 
 
       const cartCount = req.cartCount;
@@ -244,12 +226,11 @@ exports.getCartProducts = async (req, res) => {
         subtotal,
         tax,
         totalWithTax,
+        // result,
       });
     } catch (error) {
       console.log(error);
     }
-  } else {
-    return res.redirect('/login')
   }
 };
 
@@ -258,14 +239,11 @@ exports.changeProductQuantity = async (req, res) => {
   try {
     const response = {};
     let cart = req.body.cart;
-    console.log(cart, "...........");
     let count = req.body.count;
     let quantity = req.body.quantity;
     let unique_id = new ObjectId(req.body.product);
     count = parseInt(count);
     quantity = parseInt(quantity);
-    console.log(count, "//////////");
-    console.log(quantity, "??????????");
 
     if (count == -1 && quantity == 1) {
       await Cart.updateOne(
@@ -284,10 +262,11 @@ exports.changeProductQuantity = async (req, res) => {
         { _id: req.body.cart, "products._id": unique_id },
         { $inc: { "products.$.quantity": count } }
       );
-
+      let user = req.session.user;
+      
       let total = await Cart.aggregate([
         {
-          $match: { user: req.session.userId },
+          $match: { userId : req.session.user._id },
         },
         {
           $unwind: "$products",
@@ -295,10 +274,10 @@ exports.changeProductQuantity = async (req, res) => {
         {
           $project: {
             item: { $toObjectId: "$products.item" },
+            quantity: "$products.quantity",
             size: "$products.size",
             currentPrice: "$products.currentPrice",
             tax: "$products.tax",
-            quantity: "$products.quantity",
           },
         },
         {
@@ -312,17 +291,16 @@ exports.changeProductQuantity = async (req, res) => {
         {
           $project: {
             item: 1,
+            quantity: 1,
             size: 1,
             currentPrice: 1,
             tax: 1,
-            quantity: 1,
             productInfo: { $arrayElemAt: ["$productInfo", 0] },
           },
         },
         {
           $group: {
             _id: null,
-
             totalTax: { $sum: { $multiply: ["$quantity", "$tax"] } },
             total: { $sum: { $multiply: ["$quantity", "$currentPrice"] } },
             totalWithTax: {
@@ -330,14 +308,13 @@ exports.changeProductQuantity = async (req, res) => {
                 $multiply: ["$quantity", { $add: ["$tax", "$currentPrice"] }],
               },
             },
-          }
+            // total: { $sum: { $multiply: ["$quantity", "$productInfo.price"] } },
+          },
         },
       ]);
-
-    console.log(total, "////////");
-    // response.status = true;
-    res.json({ success: true, total });
-    console.log("else worked");
+      // response.status = true;
+      res.json({ success: true, total });
+      console.log("else worked");
     }
 
   } catch (error) {
@@ -345,11 +322,10 @@ exports.changeProductQuantity = async (req, res) => {
   }
 };
 
+
 exports.removeItem = async (req, res) => {
   try {
-    console.log(req.body.product, "iddunique");
     let unique_id = new ObjectId(req.body.product);
-    console.log(req.body.product, "iddunique");
     await Cart.updateOne(
       {
         _id: req.body.cart,
@@ -429,12 +405,7 @@ exports.removeItem = async (req, res) => {
   } catch (error) {
     console.log(error);
   }
-
-
 };
-
-
-
 
 exports.checkLogin = async (req, res) => {
   if (req.session.user) {
@@ -444,7 +415,7 @@ exports.checkLogin = async (req, res) => {
     });
   } else {
     // User is not logged in
-    res.status(401).json({
+    res.json({
       loggedIn: false
     });
   }

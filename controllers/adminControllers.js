@@ -2,13 +2,14 @@ const Admin = require("../models/adminSchema");
 const Category = require("../models/categorySchema");
 const Order = require("../models/orderSchema");
 const User = require("../models/userSchema")
+const Wallet = require('../models/walletSchema')
 const multer = require("multer");
 const bcrypt = require("bcrypt");
 const mongoose = require('mongoose')
 
 exports.getDashboard = async (req, res) => {
   let adminDetails = req.session.admin
-  res.render("admin/adminHome", { admin: true, adminDetails });
+  res.render("admin/adminHome", { admin:true, adminDetails });
 };
 
 exports.adminLogin = async (req, res) => {
@@ -86,11 +87,11 @@ exports.addCategoryPost = async (req, res) => {
         });
 
         const cart_data = await category.save();
-        res.redirect("products");
+        res.redirect("/admin/products");
         console.log("new category added");
         // res.send('Category added successfully');
       } else {
-        res.redirect("add-category");
+        res.redirect("/admin/add-category");
         console.log("category already exists");
         // res.status(200).send({success:true, msg: "This category ("+req.body.category+")is already exists."})
       }
@@ -132,8 +133,6 @@ exports.viewOrders = async (req, res) => {
 
     res.locals.orders = orders;
 
-    console.log(orders, "all orders");
-
 
     res.render('admin/viewOrders', { admin: true, pages: Math.ceil(count / perPage) });
   } catch (error) {
@@ -144,12 +143,10 @@ exports.viewOrders = async (req, res) => {
 exports.loadOrderData = async (req, res) => {
   const perPage = 5
   const page = req.query.page
-  console.log(page);
   const orders = await Order.find({}).skip((page - 1) * perPage).limit(perPage).populate({
     path: 'userId',
     model: 'User'
   })
-  console.log(orders.length);
   res.json(orders)
 }
 
@@ -197,14 +194,10 @@ exports.orderedProducts = async (req, res) => {
 };
 
 exports.orderStatus = async (req, res) => {
-  console.log(req.body, 'selected ')
 
   let productId = req.query.productId
   let orderId = req.query.orderId;
-  console.log(productId, "proId")
-  console.log(orderId, "ordId")
   const deliveryStatus = req.body.deliveryStatus;
-  console.log(deliveryStatus)
 
   let orders = await Order.find({ _id: orderId })
     .populate({
@@ -212,13 +205,10 @@ exports.orderStatus = async (req, res) => {
       model: 'Product'
     }).exec();
 
-  console.log(orders, "ord")
-
   let product = null;
   for (let i = 0; i < orders.length; i++) {
     let order = orders[i];
     product = order.products.find(product => product.item._id.toString() === productId);
-    console.log(product, "products found")
     if (product) {
       if (deliveryStatus == 'cancelled') {
         product.orderstatus = deliveryStatus;
@@ -232,6 +222,136 @@ exports.orderStatus = async (req, res) => {
       break; // Exit the loop once product is found
     }
   }
-
   res.redirect('/admin/orders')
 }
+
+exports.salesSummary = async (req, res) => {
+  let adminDetails = req.session.admin;
+  let orders = await Order.find()
+  const latestHitsData = await getLatestHitsData()
+    .populate({
+      path: 'userId',
+      model: 'User',
+      select: 'name email' // select the fields you want to include from the User document
+    })
+    .populate({
+      path: 'products.item',
+      model: 'Product'
+    })
+    .exec();
+
+  if (req.session.admin.orderThisWeek) {
+    res.locals.orders = req.session.admin.orderThisWeek;
+    req.session.admin.orderThisWeek = null;
+  } else if (req.session.admin.orderThisMonth) {
+    res.locals.orders = req.session.admin.orderThisMonth;
+    req.session.admin.orderThisMonth = null;
+  } else if (req.session.admin.orderThisDay) {
+    res.locals.orders = req.session.admin.orderThisDay;
+    req.session.admin.orderThisDay = null;
+  } else if (req.session.admin.orderThisYear) {
+    res.locals.orders = req.session.admin.orderThisYear;
+    req.session.admin.orderThisYear = null;
+  } else {
+    res.locals.orders = orders;
+  }
+  res.render('admin/adminHome', { admin: true, adminDetails, latestHitsData })
+}
+
+
+exports.salesReport = async (req, res) => {
+  console.log(req.body.selector, 'report body ');
+  const selector = req.body.selector;
+
+  // Extracting the relevant parts based on the selector
+  let year, month, weekStart, weekEnd, day;
+  if (selector.startsWith('year')) {
+    year = parseInt(selector.slice(5));
+  } else if (selector.startsWith('month')) {
+    const parts = selector.split('-');
+    year = parseInt(parts[1]);
+    month = parseInt(parts[2]);
+  } else if (selector.startsWith('week')) {
+    const today = new Date();
+    weekStart = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay());
+    weekEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() + 6);
+    console.log(weekStart, 'weekstart');
+    console.log(weekEnd, 'weekEnd');
+  } else if (selector.startsWith('day')) {
+    day = new Date(selector.slice(4));
+    day.setHours(0, 0, 0, 0);
+  }
+
+  if (weekStart && weekEnd) {
+    const orderThisWeek = await Order.find({ createdAt: { $gte: weekStart, $lte: weekEnd } })
+      .populate({
+        path: 'userId',
+        model: 'User',
+        select: 'name email' // select the fields you want to include from the User document
+      })
+      .populate({
+        path: 'products.item',
+        model: 'Product'
+      })
+      .exec();
+    req.session.admin.orderThisWeek = orderThisWeek;
+    console.log(orderThisWeek, 'details of this week');
+    res.locals.orders = orderThisWeek; // Update the orders data for rendering
+  } else if (year && month) {
+    const startOfMonth = new Date(year, month - 1, 1);
+    const endOfMonth = new Date(year, month, 0, 23, 59, 59, 999);
+    const orderThisMonth = await Order.find({ createdAt: { $gte: startOfMonth, $lte: endOfMonth } })
+      .populate({
+        path: 'userId',
+        model: 'User',
+        select: 'name email' // select the fields you want to include from the User document
+      })
+      .populate({
+        path: 'products.item',
+        model: 'Product'
+      })
+      .exec();
+    req.session.admin.orderThisMonth = orderThisMonth;
+    console.log(orderThisMonth, 'details of this month');
+    res.locals.orders = orderThisMonth; // Update the orders data for rendering
+  } else if (day) {
+    const startOfDay = new Date(day);
+    const endOfDay = new Date(day);
+    endOfDay.setDate(endOfDay.getDate() + 1);
+    endOfDay.setSeconds(endOfDay.getSeconds() - 1);
+    const orderThisDay = await Order.find({ createdAt: { $gte: startOfDay, $lte: endOfDay } })
+      .populate({
+        path: 'userId',
+        model: 'User',
+        select: 'name email' // select the fields you want to include from the User document
+      })
+      .populate({
+        path: 'products.item',
+        model: 'Product'
+      })
+      .exec();
+    req.session.admin.orderThisDay = orderThisDay;
+    console.log(orderThisDay, 'details of this day');
+    res.locals.orders = orderThisDay; // Update the orders data for rendering
+  } else if (year) {
+    const orderThisYear = await Order.find({
+      createdAt: { $gte: new Date(year, 0, 1), $lte: new Date(year, 11, 31, 23, 59, 59, 999) }
+    })
+      .populate({
+        path: 'userId',
+        model: 'User',
+        select: 'name email' // select the fields you want to include from the User document
+      })
+      .populate({
+        path: 'products.item',
+        model: 'Product'
+      })
+      .exec();
+    req.session.admin.orderThisYear = orderThisYear;
+    console.log(orderThisYear, 'details of this year');
+    res.locals.orders = orderThisYear; // Update the orders data for rendering
+  }
+
+  let adminDetails = req.session.admin;
+  res.render('admin/adminHome', { admin: true, adminDetails });
+};

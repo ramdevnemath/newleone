@@ -68,8 +68,13 @@
 										<input type="password" id="form2Example22" class="form-control"
 											placeholder="Password" style="font-weight: lighter;" name="password"/>
 									</div>
-
+									<% if (locals.loginErr) { %>
+										<span style="color: #d8363a;">
+											<%= loginErr %>
+										</span>
+									<% } %>
 									<div class="text-center pt-1 mb-5 pb-1">
+										
 										<button class="btn btn-primary btn-block fa-lg mb-3"
 											style="background-color:#ee7724; border: none;" type="submit">Login
 										</button>

@@ -19,16 +19,11 @@ exports.addProductPage = async (req, res) => {
     let adminDetails = req.session.admin;
     const products = await Product.find({});
     const categories = await Category.find();
-    // const categories = await Category.find();
-    // console.log(categories, 'categories')
     res.render('admin/add-product', { admin: true, adminDetails, categories, products })
 }
 
 
 exports.postProduct = async (req, res, next) => {
-    console.log(req.body)
-    console.log(req.files)
-    // console.log(req.body.category)
     try {
         const newProduct = new Product({
             company: req.body.company,
@@ -43,7 +38,6 @@ exports.postProduct = async (req, res, next) => {
             image: req.files.map(file => file.filename)
         });
         await Product.create(newProduct);
-        console.log(newProduct)
         res.redirect('/admin/home');
     } catch (error) {
         console.log(error);
@@ -66,12 +60,7 @@ exports.getAllProducts = async (req, res) => {
         };
       }));
   
-      console.log(populatedProducts);
-  
       let adminDetails = req.session.admin;
-  
-      console.log(categories);
-      console.log(req.session.notification);
   
       res.render('admin/view-products', { admin: true, products: populatedProducts, adminDetails, categories, msg: req.session.notification });
       req.session.notification = '';
@@ -83,7 +72,6 @@ exports.getAllProducts = async (req, res) => {
   
 
 exports.deleteProduct = async (req, res) => {
-    console.log(req.params.id)
     try {
         const product = await Product.findByIdAndUpdate(
             req.params.id,
@@ -101,7 +89,6 @@ exports.deleteProduct = async (req, res) => {
 }
 
 exports.deleteCategory = async (req, res) => {
-    console.log(req.params.id)
     try {
         const categories = await Category.findByIdAndUpdate(
             req.params.id,
@@ -121,11 +108,9 @@ exports.deleteCategory = async (req, res) => {
 exports.getEditProductPage = async (req, res) => {
     try {
       const editProduct = await Product.findOne({ _id: req.params.id });
-      console.log(editProduct, "editProduct found");
   
       let adminDetails = req.session.admin;
       const categories = await Category.find();
-      console.log(categories);
   
       const category = await Category.findOne({ _id: editProduct.category });
   
@@ -165,8 +150,6 @@ exports.editProduct = async (req, res) => {
               image: updatedImages
             }
           );
-  
-          console.log(items);
           req.session.notification = 'product edited'
            res.redirect('/admin/products');
           console.log('Redirected');
@@ -183,7 +166,6 @@ exports.editProduct = async (req, res) => {
 exports.editCategory = async (req, res) => {
     try {
         const editCategory = await Category.findOne({ _id: req.params.id })
-        console.log(editCategory, "editCategory found")
         let adminDetails = req.session.admin;
         // const subcategories = await SubCategory.find()
 
@@ -194,15 +176,10 @@ exports.editCategory = async (req, res) => {
 }
 
 exports.postEditCategory = async (req, res) => {
-    console.log(req.params.id, 'params')
-    console.log('trueeee');
-    console.log(req.body, 'body')
     try {
         const items = await Category.updateOne({ _id: req.params.id }, {
             category: req.body.category,
         })
-
-        console.log(items)
         await res.redirect('/admin/products');
         console.log('redirected')
     } catch (error) {
